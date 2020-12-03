@@ -1,0 +1,22 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 9,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "extends": ["airbnb", "airbnb/hooks", "prettier", "prettier/react"],
+  "plugins": ["prettier"],
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "prettier/prettier": ["error"],
+    "semi": "error",
+    "react/prefer-stateless-function": [2]
+  },
+  "env": {
+    "jest" : true,
+    "es6": true,
+    "browser": true
+  }
+}
