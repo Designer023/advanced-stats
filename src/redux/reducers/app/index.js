@@ -6,9 +6,9 @@ export default function (state = initialState, action) {
     if (!action) return state;
 
     switch (action.type) {
-        case "START_LOADING":
+        case "LOADING_START":
             return { isLoading: true };
-        case "END_LOADING":
+        case "LOADING_END":
             return { isLoading: false };
         default:
             return state;
