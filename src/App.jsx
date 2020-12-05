@@ -6,10 +6,11 @@ import Loading from "./components/Loading";
 import RunDetailsPage from "./pages/Run";
 import HomePage from "./pages/Home";
 import RideDetailsPage from "./pages/Ride";
+import EddingtionDetailsPage from "./pages/Eddington";
 
 function App() {
     return (
-        <div className="App">
+        <div className="App relative">
             <Loading />
             <Nav />
             <div className="container mx-auto">
@@ -20,6 +21,8 @@ function App() {
 
                     <Route path="/run" exact component={RunDetailsPage} />
                     <Route path="/ride" exact component={RideDetailsPage} />
+
+                    <Route path="/eddington" exact component={EddingtionDetailsPage} />
                 </Switch>
             </div>
         </div>

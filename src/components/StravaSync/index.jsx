@@ -2,7 +2,8 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import Button from "../Button";
-import { getActivities } from "../../redux/actions";
+import { getActivities } from "../../sagas/actions";
+// import { getActivities } from "../../redux/actions";
 
 const StravaSync = () => {
     const auth = useSelector((state) => state.auth);

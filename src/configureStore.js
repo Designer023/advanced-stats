@@ -10,7 +10,7 @@ import { loadState, saveState } from "./localStorage";
 
 // import appMiddleware from "./redux/middleware/app";
 
-import { helloSaga } from "./sagas";
+import rootSaga from "./sagas";
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -23,13 +23,14 @@ function configureStore(preloadedState) {
     const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
     const store = createStore(createRootReducer(history), persistedState, composeEnhancer(applyMiddleware(routerMiddleware(history), thunk, sagaMiddleware)));
 
-    sagaMiddleware.run(helloSaga);
+    sagaMiddleware.run(rootSaga);
 
     store.subscribe(
         throttle(() => {
             saveState({
                 auth: store.getState().auth,
-                athlete: store.getState().athlete
+                athlete: store.getState().athlete,
+                processedData: store.getState().processedData
             });
         }, 1000)
     );

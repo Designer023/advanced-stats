@@ -1,62 +1,61 @@
-/* eslint-disable no-underscore-dangle,consistent-return,no-unused-vars */
-import { push } from "connected-react-router";
-import axios from "axios";
-import get from "lodash/get";
-import moment from "moment";
-import { store } from "../configureStore";
+// /* eslint-disable no-underscore-dangle,consistent-return,no-unused-vars */
+// import { push } from "connected-react-router";
+// import axios from "axios";
+// import get from "lodash/get";
+// import moment from "moment";
 
-const clientID = process.env.REACT_APP_STRAVA_CLIENT_ID;
-const clientSecret = process.env.REACT_APP_STRAVA_CLIENT_SECRET;
-
-const BASE_URL = "https://www.strava.com/api/v3";
-
-const tokenClient = axios.create({
-    baseURL: "https://www.strava.com/oauth",
-    timeout: 3000
-});
+// const clientID = process.env.REACT_APP_STRAVA_CLIENT_ID;
+// const clientSecret = process.env.REACT_APP_STRAVA_CLIENT_SECRET;
+//
+// const BASE_URL = "https://www.strava.com/api/v3";
+//
+// const tokenClient = axios.create({
+//     baseURL: "https://www.strava.com/oauth",
+//     timeout: 3000
+// });
 
 // eslint-disable-next-line camelcase
-export const updateAuthTokens = ({ refresh_token, expires_at, access_token }) => {
-    // console.log("UPDATE_AUTH_TOKENS", id);
-    return {
-        type: "UPDATE_AUTH_TOKENS",
-        payload: {
-            isAuthenticated: true,
-            refreshToken: refresh_token,
-            expiresAt: expires_at,
-            accessToken: access_token
-        }
-    };
-};
+// export const updateAuthTokens = ({ refresh_token, expires_at, access_token }) => {
+//     // console.log("UPDATE_AUTH_TOKENS", id);
+//     return {
+//         type: "UPDATE_AUTH_TOKENS",
+//         payload: {
+//             isAuthenticated: true,
+//             refreshToken: refresh_token,
+//             expiresAt: expires_at,
+//             accessToken: access_token
+//         }
+//     };
+// };
 
 // eslint-disable-next-line import/prefer-default-export
-export const startAuththentication = (code) => {
-    return (dispatch, getState) => {
-        // dispatch(startLoading());
-        tokenClient({
-            url: "/token",
-            method: "post",
-            params: {
-                client_id: clientID,
-                client_secret: clientSecret,
-                code,
-                grant_type: "authorization_code"
-            }
-        })
-            .then((response) => {
-                // Dispatch process authentication
-                dispatch(updateAuthTokens(response.data));
-                dispatch(push({ pathname: "/", search: "" }));
-                // dispatch(endLoading());
-            })
-            .catch((error) => {
-                console.log("error:", error);
-                // Dispatch error message
-                // Dispatch finish waiting room
-                // dispatch(recieveAuthenticationError());
-            });
-    };
-};
+// export const startAuththentication = (code) => {
+//     return (dispatch, getState) => {
+//         // dispatch(startLoading());
+//         tokenClient({
+//             url: "/token",
+//             method: "post",
+//             params: {
+//                 client_id: clientID,
+//                 client_secret: clientSecret,
+//                 code,
+//                 grant_type: "authorization_code"
+//             }
+//         })
+//             .then((response) => {
+//                 // Dispatch process authentication
+//                 dispatch(updateAuthTokens(response.data));
+//                 dispatch(push({ pathname: "/", search: "" }));
+//                 // dispatch(endLoading());
+//             })
+//             .catch((error) => {
+//                 console.log("error:", error);
+//                 // Dispatch error message
+//                 // Dispatch finish waiting room
+//                 // dispatch(recieveAuthenticationError());
+//             });
+//     };
+// };
 // function getAccessToken() {
 //     return localStorage.getItem("accessToken");
 // }
@@ -108,21 +107,22 @@ const apiClient = axios.create({ baseURL: BASE_URL });
 // };
 //
 
-apiClient.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem("accessToken");
+// apiClient.interceptors.request.use(
+//     (config) => {
+//         const token = localStorage.getItem("accessToken");
+//
+//         if (token) {
+//             // eslint-disable-next-line no-param-reassign
+//             config.headers.Authorization = `Bearer ${token}`;
+//         }
+//
+//         return config;
+//     },
+//     (error) => {
+//         Promise.reject(error);
+//     }
+// );
 
-        if (token) {
-            // eslint-disable-next-line no-param-reassign
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-
-        return config;
-    },
-    (error) => {
-        Promise.reject(error);
-    }
-);
 //
 // apiClient.interceptors.response.use(
 //     (response) => {
@@ -268,73 +268,73 @@ apiClient.interceptors.request.use(
 //     };
 // };
 //
-const updateActivities = (data) => {
-    // console.log("UPDATE_ATHLETE_ACTIVITIES...", data);
-    return {
-        type: "UPDATE_ATHLETE_ACTIVITIES",
-        payload: data
-    };
-};
-
-export function getActivities(page = 1) {
-    return function (dispatch, getState) {
-        // dispatch(startLoading());
-
-        const expiresAt = localStorage.getItem("expiresAt");
-        const now = Math.floor(Date.now() / 1000);
-
-        if (now > expiresAt) {
-            // Session token expired -  get a new one
-
-            const refreshToken = localStorage.getItem("refreshToken");
-            tokenClient({
-                url: "/token",
-                method: "post",
-                params: {
-                    client_id: clientID,
-                    client_secret: clientSecret,
-                    refresh_token: refreshToken,
-                    grant_type: "refresh_token"
-                }
-            })
-                .then((response) => {
-                    dispatch(updateAuthTokens(response.data));
-                    dispatch(getActivities());
-                })
-                .catch((error) => {
-                    console.log("error:", error);
-                });
-        } else {
-            // Session valid
-
-            // try and get the latest activity
-            const lastActivity = getState().athlete.activities.slice(-1)[0];
-            const lastDate = get(lastActivity, "start_date");
-
-            let epoch;
-            if (lastDate) {
-                epoch = moment(lastDate).unix();
-            } else {
-                epoch = new Date(2020, 0, 1).getTime() / 1000; // Month is 0 based WTF!
-            }
-
-            console.log(lastActivity, lastDate, epoch);
-
-            apiClient({
-                url: `/athlete/activities?per_page=30&after=${epoch}&page=${page}`,
-                method: "get"
-            }).then((response) => {
-                const activities = response.data;
-
-                if (activities.length > 0) {
-                    // console.log(activities);
-                    dispatch(updateActivities(activities));
-                    dispatch(getActivities(page + 1));
-                } else {
-                    console.log("done");
-                    // dispatch(endLoading());
-                }
-            });
-        }
-    };
-}
+// const updateActivities = (data) => {
+//     // console.log("UPDATE_ATHLETE_ACTIVITIES...", data);
+//     return {
+//         type: "UPDATE_ATHLETE_ACTIVITIES",
+//         payload: data
+//     };
+// };
+//
+// export function getActivities(page = 1) {
+//     return function (dispatch, getState) {
+//         // dispatch(startLoading());
+//
+//         const expiresAt = localStorage.getItem("expiresAt");
+//         const now = Math.floor(Date.now() / 1000);
+//
+//         if (now > expiresAt) {
+//             // Session token expired -  get a new one
+//
+//             const refreshToken = localStorage.getItem("refreshToken");
+//             tokenClient({
+//                 url: "/token",
+//                 method: "post",
+//                 params: {
+//                     client_id: clientID,
+//                     client_secret: clientSecret,
+//                     refresh_token: refreshToken,
+//                     grant_type: "refresh_token"
+//                 }
+//             })
+//                 .then((response) => {
+//                     dispatch(updateAuthTokens(response.data));
+//                     dispatch(getActivities());
+//                 })
+//                 .catch((error) => {
+//                     console.log("error:", error);
+//                 });
+//         } else {
+//             // Session valid
+//
+//             // try and get the latest activity
+//             const lastActivity = getState().athlete.activities.slice(-1)[0];
+//             const lastDate = get(lastActivity, "start_date");
+//
+//             let epoch;
+//             if (lastDate) {
+//                 epoch = moment(lastDate).unix();
+//             } else {
+//                 epoch = new Date(2020, 0, 1).getTime() / 1000; // Month is 0 based WTF!
+//             }
+//
+//             epoch = new Date(2020, 10, 1).getTime() / 1000; // Month is 0 based WTF!
+//
+//             apiClient({
+//                 url: `/athlete/activities?per_page=30&after=${epoch}&page=${page}`,
+//                 method: "get"
+//             }).then((response) => {
+//                 const activities = response.data;
+//
+//                 if (activities.length > 0) {
+//                     // console.log(activities);
+//                     dispatch(updateActivities(activities));
+//                     dispatch(getActivities(page + 1));
+//                 } else {
+//                     console.log("done");
+//                     // dispatch(endLoading());
+//                 }
+//             });
+//         }
+//     };
+// }

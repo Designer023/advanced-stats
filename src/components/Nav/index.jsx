@@ -19,6 +19,10 @@ const NAV = [
     {
         title: "Ride",
         to: "/ride"
+    },
+    {
+        title: "NEdd",
+        to: "/eddington"
     }
 ];
 
@@ -78,7 +82,9 @@ const Nav = () => {
                         <div className="hidden md:block">
                             <div className="ml-10 flex items-baseline space-x-4">
                                 {NAV.map(({ title, to }) => (
-                                    <CustomNavLink to={to}>{title}</CustomNavLink>
+                                    <CustomNavLink key={to} to={to}>
+                                        {title}
+                                    </CustomNavLink>
                                 ))}
                             </div>
                         </div>
@@ -138,7 +144,7 @@ const Nav = () => {
             <div className={`${mobileNavOpen ? "" : "hidden"} md:hidden`}>
                 <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                     {NAV.map(({ title, to }) => (
-                        <NavLink to={to} className="block px-3 py-2 rounded-md text-base font-medium text-white bg-gray-900">
+                        <NavLink key={to} to={to} className="block px-3 py-2 rounded-md text-base font-medium text-white bg-gray-900">
                             {title}
                         </NavLink>
                     ))}
