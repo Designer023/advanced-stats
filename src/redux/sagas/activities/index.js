@@ -48,6 +48,7 @@ const getLastActivityTimestamp = (state) => {
 };
 
 function* updateAthleteActivity() {
+    yield put({ type: "LOADING_START" });
     yield put({ type: "LOADING_ACTIVITIES_START" });
     yield call(validateAuthTokens);
 
@@ -69,6 +70,7 @@ function* updateAthleteActivity() {
         yield put({ type: "LOADING_ACTIVITIES_ERROR", message: e.message });
     }
     yield put({ type: "LOADING_ACTIVITIES_END" });
+    yield put({ type: "LOADING_END" });
 }
 
 // eslint-disable-next-line import/prefer-default-export

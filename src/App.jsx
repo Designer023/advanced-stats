@@ -1,5 +1,6 @@
 import { Route, Switch } from "react-router";
 
+import { useSelector } from "react-redux";
 import Nav from "./components/Nav";
 import Token from "./components/Token";
 import Loading from "./components/Loading";
@@ -9,8 +10,10 @@ import RideDetailsPage from "./pages/Ride";
 import EddingtionDetailsPage from "./pages/Eddington";
 
 function App() {
+    const { isLoading } = useSelector((state) => state.app);
+
     return (
-        <div className="App relative">
+        <div className={`relative ${isLoading ? "overflow-hidden h-screen" : ""}`}>
             <Loading />
             <Nav />
             <div className="container mx-auto">

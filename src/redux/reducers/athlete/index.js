@@ -19,8 +19,9 @@ export default (state = initialState, action) => {
         case "LOADING_ACTIVITIES_PAGE_COMPLETE":
             // eslint-disable-next-line no-case-declarations
             const activities = unionBy(state.activities, action.payload, "id");
-
             return { ...state, activities };
+        case "LOADING_ATHLETE_DETAILS_COMPLETE":
+            return { ...state, details: action.payload };
 
         default:
             return state;

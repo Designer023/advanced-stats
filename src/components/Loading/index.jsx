@@ -7,10 +7,13 @@ const Loading = () => {
     return (
         <>
             {isLoading ? (
-                <div className="absolute top-0 bottom-0 left-0 right-0 bg-gray-100	z-50 flex justify-content-center">
-                    <div>
-                        <h1>Loading...</h1>
-                        <h3>Page is loading</h3>
+                <div className="absolute top-0 h-screen left-0 w-screen bg-gray-100	z-50">
+                    <div className="p-10 h-full w-full">
+                        <div className="px-8 py-16 bg-gray-50 rounded-lg border border-dashed border-gray-300 flex items-center justify-center	 h-full w-full	">
+                            <div>
+                                <h3 className="text-2xl text-center text-gray-400">Loading 🌍</h3>
+                            </div>
+                        </div>
                     </div>
                 </div>
             ) : null}

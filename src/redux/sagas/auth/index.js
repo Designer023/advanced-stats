@@ -43,9 +43,8 @@ const tokenIsValid = () => {
 export function* validateAuthTokens() {
     const validToken = yield call(tokenIsValid);
 
-    yield put({ type: "UPDATE: STARTED" });
-
     if (!validToken) {
+        yield put({ type: "UPDATE_TOKEN_STARTED" });
         // eslint-disable-next-line camelcase
         const { refresh_token, expires_at, access_token } = yield call(updateRefreshToken);
         yield put({
