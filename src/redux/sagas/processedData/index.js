@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/prefer-default-export
 import { call, put, select, takeEvery } from "redux-saga/effects";
-import eddingtonValue from "../../utils/eddington";
+import eddingtonValue from "../../../utils/eddington";
 
 const processActiities = (activities) => {
     const activityTypes = ["Run", "Ride"];

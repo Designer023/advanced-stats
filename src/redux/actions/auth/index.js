@@ -1,6 +1,4 @@
-export const BEGIN_STRAVA_AUTH = "BEGIN_STRAVA_AUTH";
-export const VALIDATE_STRAVA_TOKEN = "VALIDATE_STRAVA_TOKEN";
-export const UPDATE_AUTH_TOKENS = "UPDATE_AUTH_TOKENS";
+import { BEGIN_STRAVA_AUTH, VALIDATE_STRAVA_TOKEN, UPDATE_AUTH_TOKENS } from "../../constants/auth";
 
 export const beginStravaAuthentication = () => ({
     type: BEGIN_STRAVA_AUTH

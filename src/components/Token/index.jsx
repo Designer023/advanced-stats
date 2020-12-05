@@ -3,7 +3,7 @@ import { push } from "connected-react-router";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import { validateStravaToken } from "../../sagas/actions/auth";
+import { validateStravaToken } from "../../redux/actions/auth";
 
 const InitialLoad = () => {
     const location = useSelector((state) => state.router.location);

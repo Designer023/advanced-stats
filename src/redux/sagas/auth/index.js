@@ -1,9 +1,11 @@
 import { call, put, takeEvery } from "redux-saga/effects";
 import axios from "axios";
 // import { push } from "connected-react-router";
-import { BEGIN_STRAVA_AUTH, VALIDATE_STRAVA_TOKEN, updateAuthTokens } from "../actions/auth";
+import { updateAuthTokens } from "../../actions/auth";
+import { BEGIN_STRAVA_AUTH, VALIDATE_STRAVA_TOKEN } from "../../constants/auth";
 
 const clientID = process.env.REACT_APP_STRAVA_CLIENT_ID;
+// Todo: Migrate to netlify Lambda to keep secure
 const clientSecret = process.env.REACT_APP_STRAVA_CLIENT_SECRET;
 
 const tokenClient = axios.create({
