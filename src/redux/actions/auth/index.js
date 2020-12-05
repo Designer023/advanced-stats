@@ -1,7 +1,11 @@
-import { BEGIN_STRAVA_AUTH, VALIDATE_STRAVA_TOKEN, UPDATE_AUTH_TOKENS } from "../../constants/auth";
+import { BEGIN_STRAVA_AUTH, VALIDATE_STRAVA_TOKEN, UPDATE_AUTH_TOKENS, AUTH_START_LOG_OUT } from "../../constants/auth";
 
 export const beginStravaAuthentication = () => ({
     type: BEGIN_STRAVA_AUTH
+});
+
+export const beginStravaDeauthentication = () => ({
+    type: AUTH_START_LOG_OUT
 });
 
 export const validateStravaToken = (code) => ({

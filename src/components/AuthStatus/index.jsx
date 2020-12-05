@@ -17,7 +17,7 @@ const AuthStatus = () => {
     }, []);
 
     return (
-        <div className="text-sm text-gray-700">
+        <div className="text-sm text-gray-700 fixed bottom-3 left-3 p-3 bg-gray-100 w-48 rounded">
             <div>Auth: {auth ? "☑️" : "❌"}</div>
             <div>
                 Token: {tokenValid ? "☑️" : "❌"} {time}

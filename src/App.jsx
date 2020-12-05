@@ -5,6 +5,7 @@ import Nav from "./components/Nav";
 import Token from "./components/Token";
 import Loading from "./components/Loading";
 import RunDetailsPage from "./pages/Run";
+import AuthStatus from "./components/AuthStatus";
 import HomePage from "./pages/Home";
 import RideDetailsPage from "./pages/Ride";
 import EddingtionDetailsPage from "./pages/Eddington";
@@ -13,7 +14,7 @@ function App() {
     const { isLoading } = useSelector((state) => state.app);
 
     return (
-        <div className={`relative ${isLoading ? "overflow-hidden h-screen" : ""}`}>
+        <div className={`pb-10 relative ${isLoading ? "overflow-hidden h-screen" : ""}`}>
             <Loading />
             <Nav />
             <div className="container mx-auto">
@@ -28,6 +29,8 @@ function App() {
                     <Route path="/eddington" exact component={EddingtionDetailsPage} />
                 </Switch>
             </div>
+
+            <AuthStatus />
         </div>
     );
 }

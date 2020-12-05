@@ -1,8 +1,9 @@
-import { call, put, takeEvery } from "redux-saga/effects";
+import { call, put, takeEvery, select } from "redux-saga/effects";
 import axios from "axios";
 // import { push } from "connected-react-router";
 import { updateAuthTokens } from "../../actions/auth";
 import { BEGIN_STRAVA_AUTH, VALIDATE_STRAVA_TOKEN } from "../../constants/auth";
+import { getAthlete } from "../../actions/athlete";
 
 const clientID = process.env.REACT_APP_STRAVA_CLIENT_ID;
 // Todo: Migrate to netlify Lambda to keep secure
@@ -59,6 +60,36 @@ export function* validateAuthTokens() {
     }
 }
 
+const deauthorise = (accessToken) => {
+    return tokenClient({
+        url: "/deauthorize",
+        method: "post",
+        params: {
+            access_token: accessToken
+        }
+    })
+        .then((response) => {
+            return response.data;
+        })
+        .catch((error) => {
+            Promise.reject(error);
+        });
+};
+
+const getAccessToken = (state) => {
+    return state.auth.accessToken;
+};
+
+function* beginDeAuth() {
+    const accessToken = yield select(getAccessToken);
+    const data = yield call(deauthorise, accessToken);
+    yield put({ type: "AUTH_LOGGED_OUT", payload: data });
+}
+
+export function* startStravaDeAuthProcess() {
+    yield takeEvery("AUTH_START_LOG_OUT", beginDeAuth);
+}
+
 function handOffToStravaAuth() {
     const { origin } = window;
     window.location.assign(`https://www.strava.com/oauth/authorize?client_id=${clientID}&redirect_uri=${origin}/token&response_type=code&scope=activity:read`);
@@ -95,6 +126,7 @@ function* validateStravaToken({ payload: code }) {
     // Todo: Add Loading start
     const data = yield call(apiValidateToken, code);
     yield put(updateAuthTokens(data));
+    yield put(getAthlete());
     // Todo: Add Loading end
 }
 

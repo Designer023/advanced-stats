@@ -55,6 +55,8 @@ const initialState = {
 
 export default (state = initialState, action) => {
     switch (action.type) {
+        case "AUTH_LOGGED_OUT":
+            return { ...initialState };
         case "LOADING_ACTIVITIES_START":
             return { ...state, dirty: true };
         case "PROCESSING_DATA_END":

@@ -10,6 +10,11 @@ export default function (state = initialState, action) {
     if (!action) return state;
 
     switch (action.type) {
+        case "AUTH_LOGGED_OUT":
+            localStorage.removeItem("refreshToken");
+            localStorage.removeItem("expiresAt");
+            localStorage.removeItem("accessToken");
+            return { ...initialState };
         case "UPDATE_AUTH_TOKENS":
             localStorage.setItem("refreshToken", action.payload.refreshToken);
             localStorage.setItem("expiresAt", action.payload.expiresAt);
