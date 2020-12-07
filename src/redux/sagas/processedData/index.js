@@ -47,8 +47,7 @@ const processActiities = (activities) => {
 
         Object.keys(eddingtonYearNumbers).forEach((y) => {
             const { breakdown } = eddingtonYearNumbers[y];
-            const yearScore = eddingtonValue(breakdown);
-            eddingtonYearNumbers[y].score = yearScore;
+            eddingtonYearNumbers[y].score = eddingtonValue(breakdown);
         });
         data[type.toLowerCase()] = {
             breakdown: eddingtonNumbers,
@@ -66,12 +65,16 @@ const getAllActivities = (state) => {
 
 function* updateAthleteActivity() {
     yield put({ type: "PROCESSING_DATA_START" });
+    yield put({ type: "LOADING_START" });
+    yield put({ type: "SET_LOADING_MESSAGE", payload: `Processing data...` });
 
     const activities = yield select(getAllActivities);
 
     const data = yield call(processActiities, activities);
 
     yield put({ type: "PROCESSING_DATA_END", payload: data });
+    yield put({ type: "RESET_LOADING_MESSAGE" });
+    yield put({ type: "LOADING_END" });
 }
 // eslint-disable-next-line import/prefer-default-export
 export function* watchProcessDataAsync() {

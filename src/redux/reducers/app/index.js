@@ -1,5 +1,6 @@
 const initialState = {
-    isLoading: false
+    isLoading: false,
+    loadingMessage: "Please wait..."
 };
 
 export default (state = initialState, action) => {
@@ -7,9 +8,13 @@ export default (state = initialState, action) => {
 
     switch (action.type) {
         case "LOADING_START":
-            return { isLoading: true };
+            return { ...state, isLoading: true };
         case "LOADING_END":
-            return { isLoading: false };
+            return { ...state, isLoading: false };
+        case "SET_LOADING_MESSAGE":
+            return { ...state, loadingMessage: action.payload };
+        case "RESET_LOADING_MESSAGE":
+            return { ...state, loadingMessage: initialState.loadingMessage };
         default:
             return state;
     }

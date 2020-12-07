@@ -49,6 +49,8 @@ const getLastActivityTimestamp = (state) => {
 };
 
 function* updateAthleteActivity() {
+    yield put({ type: "SET_LOADING_MESSAGE", payload: `Retrieving activities...` });
+
     yield put({ type: "LOADING_START" });
     yield put({ type: "LOADING_ACTIVITIES_START" });
     yield call(validateAuthTokens);
@@ -65,11 +67,13 @@ function* updateAthleteActivity() {
             } else {
                 yield put({ type: "LOADING_ACTIVITIES_PAGE_COMPLETE", payload: data });
                 page += 1;
+                yield put({ type: "SET_LOADING_MESSAGE", payload: `Retrieving page ${page}...` });
             }
         }
     } catch (e) {
         yield put({ type: "LOADING_ACTIVITIES_ERROR", message: e.message });
     }
+    yield put({ type: "RESET_LOADING_MESSAGE" });
     yield put({ type: "LOADING_ACTIVITIES_END" });
     yield put({ type: "LOADING_END" });
 }
