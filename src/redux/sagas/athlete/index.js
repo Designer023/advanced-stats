@@ -1,5 +1,4 @@
 import axios from "axios";
-// import get from "lodash/get";
 import { call, put, takeEvery } from "redux-saga/effects";
 import { validateAuthTokens } from "../auth";
 

@@ -1,6 +1,6 @@
 import { Route, Switch } from "react-router";
-
 import { useSelector } from "react-redux";
+
 import Nav from "./components/Nav";
 import Token from "./components/Token";
 import Loading from "./components/Loading";

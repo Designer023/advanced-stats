@@ -1,16 +1,21 @@
 import { call, put, takeEvery, select } from "redux-saga/effects";
 import axios from "axios";
-// import { push } from "connected-react-router";
+import { push } from "connected-react-router";
 import { updateAuthTokens } from "../../actions/auth";
 import { BEGIN_STRAVA_AUTH, VALIDATE_STRAVA_TOKEN } from "../../constants/auth";
 import { getAthlete } from "../../actions/athlete";
 
 const clientID = process.env.REACT_APP_STRAVA_CLIENT_ID;
 // Todo: Migrate to netlify Lambda to keep secure
-const clientSecret = process.env.REACT_APP_STRAVA_CLIENT_SECRET;
+const clientSecret = process.env.STRAVA_CLIENT_SECRET;
 
 const tokenClient = axios.create({
     baseURL: "https://www.strava.com/oauth",
+    timeout: 3000
+});
+
+const netlifyClient = axios.create({
+    baseURL: "/.netlify/functions",
     timeout: 3000
 });
 
@@ -81,9 +86,12 @@ const getAccessToken = (state) => {
 };
 
 function* beginDeAuth() {
+    yield put({ type: "LOADING_START" });
     const accessToken = yield select(getAccessToken);
     const data = yield call(deauthorise, accessToken);
     yield put({ type: "AUTH_LOGGED_OUT", payload: data });
+    yield put(push("/"));
+    yield put({ type: "LOADING_END" });
 }
 
 export function* startStravaDeAuthProcess() {
@@ -104,14 +112,11 @@ export function* beginStravaAuthAsync() {
 }
 
 const apiValidateToken = (code) => {
-    return tokenClient({
-        url: "/token",
+    return netlifyClient({
+        url: "/stravaAuth",
         method: "post",
         params: {
-            client_id: clientID,
-            client_secret: clientSecret,
-            code,
-            grant_type: "authorization_code"
+            code
         }
     })
         .then((response) => {
@@ -123,11 +128,12 @@ const apiValidateToken = (code) => {
 };
 
 function* validateStravaToken({ payload: code }) {
-    // Todo: Add Loading start
+    yield put({ type: "LOADING_START" });
     const data = yield call(apiValidateToken, code);
     yield put(updateAuthTokens(data));
+    yield put(push("/"));
     yield put(getAthlete());
-    // Todo: Add Loading end
+    yield put({ type: "LOADING_END" });
 }
 
 export function* ValidateStravaTokenAsync() {

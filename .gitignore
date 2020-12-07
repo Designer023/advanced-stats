@@ -24,3 +24,7 @@ yarn-error.log*
 /.env
 /.idea/
 /.eslintcache
+
+# Local Netlify folder
+.netlify
+/lambda/
