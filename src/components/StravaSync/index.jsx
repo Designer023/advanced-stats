@@ -13,11 +13,13 @@ const StravaSync = () => {
         <>
             {auth && auth.isAuthenticated ? (
                 <>
-                    <div className="mt-3">
+                    <div className="">
                         <Button onClick={() => dispatch(getActivities())}>Sync Data</Button>
                     </div>
-                    <div className="mt-3">
-                        <Button onClick={() => dispatch(getAthlete())}>Sync Athlete</Button>
+                    <div className="ml-2">
+                        <Button color="blue" onClick={() => dispatch(getAthlete())}>
+                            Sync Athlete
+                        </Button>
                     </div>
                 </>
             ) : (

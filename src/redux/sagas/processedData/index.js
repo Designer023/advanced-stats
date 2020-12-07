@@ -1,5 +1,7 @@
 // eslint-disable-next-line import/prefer-default-export
 import { call, put, select, takeEvery } from "redux-saga/effects";
+import moment from "moment";
+
 import eddingtonValue from "../../../utils/eddington";
 
 const processActiities = (activities) => {
@@ -11,26 +13,48 @@ const processActiities = (activities) => {
 
         const eddingtonNumbers = [0];
 
+        const eddingtonYearNumbers = {};
+
         filteredActivity.forEach((fActivity) => {
-            // console.log("PROCESS", activity);
+            const year = moment(fActivity.start_date).year();
+
+            if (typeof eddingtonYearNumbers[year] === "undefined") {
+                eddingtonYearNumbers[year] = {
+                    breakdown: [0],
+                    score: 0
+                };
+            }
+
             const { distance } = fActivity;
             const d = Math.floor(distance / 1000);
 
             for (let i = 1; i <= d; i += 1) {
+                // All time
                 if (typeof eddingtonNumbers[i] === "undefined") {
                     eddingtonNumbers[i] = 1;
                 } else {
                     eddingtonNumbers[i] += 1;
                 }
+                // by the year
+                if (typeof eddingtonYearNumbers[year].breakdown[i] === "undefined") {
+                    eddingtonYearNumbers[year].breakdown[i] = 1;
+                } else {
+                    eddingtonYearNumbers[year].breakdown[i] += 1;
+                }
             }
-
-            const score = eddingtonValue(eddingtonNumbers);
-
-            data[type.toLowerCase()] = {
-                breakdown: eddingtonNumbers,
-                overall: score
-            };
         });
+        const score = eddingtonValue(eddingtonNumbers);
+
+        Object.keys(eddingtonYearNumbers).forEach((y) => {
+            const { breakdown } = eddingtonYearNumbers[y];
+            const yearScore = eddingtonValue(breakdown);
+            eddingtonYearNumbers[y].score = yearScore;
+        });
+        data[type.toLowerCase()] = {
+            breakdown: eddingtonNumbers,
+            overall: score,
+            years: eddingtonYearNumbers
+        };
     });
 
     return { eddington: data };

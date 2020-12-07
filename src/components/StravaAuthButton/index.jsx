@@ -12,6 +12,7 @@ const StravaAuthButton = () => {
         <>
             {auth && auth.isAuthenticated ? (
                 <Button
+                    color="red"
                     onClick={() => {
                         dispatch(beginStravaDeauthentication());
                     }}

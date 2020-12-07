@@ -7,7 +7,7 @@ const tableClassesTodo = "border border-grey-800 px-4 py-2 text-gray-900 font-me
 // eslint-disable-next-line react/prop-types
 const EddingtonTable = ({ data }) => {
     return (
-        <table className="table-auto">
+        <table className="table-auto w-full">
             <thead>
                 <tr>
                     <th className={tableHeaderClasses}>Distance</th>

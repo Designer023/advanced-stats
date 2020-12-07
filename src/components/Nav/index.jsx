@@ -112,7 +112,7 @@ const UserMenu = () => {
                 </span>
 
                 <div className="px-4 py-2">
-                    <StravaSync />
+                    <StravaAuthButton />
                 </div>
             </div>
         </div>
@@ -155,9 +155,7 @@ const MobileUserMenu = () => {
                     Settings
                 </a>
 
-                <a href="#" className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">
-                    Sign out
-                </a>
+                <StravaAuthButton />
             </div>
         </div>
     );
@@ -193,7 +191,7 @@ const Nav = () => {
 
                     <div className="hidden md:block">
                         <div className="ml-4 flex items-center md:ml-6">
-                            <StravaAuthButton />
+                            {!isAuthenticated ? <StravaAuthButton /> : <StravaSync />}
 
                             {isAuthenticated && athleteDetails ? <UserMenu /> : null}
                         </div>

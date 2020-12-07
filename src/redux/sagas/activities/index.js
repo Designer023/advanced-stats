@@ -44,7 +44,8 @@ const getLastActivityTimestamp = (state) => {
         return moment(lastDate).unix();
     }
 
-    return moment().year(2020).startOf("year").unix();
+    // TODO: set default year as env
+    return moment().year(2009).startOf("year").unix();
 };
 
 function* updateAthleteActivity() {
