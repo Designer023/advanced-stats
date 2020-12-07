@@ -2,7 +2,7 @@ const initialState = {
     isLoading: false
 };
 
-export default function (state = initialState, action) {
+export default (state = initialState, action) => {
     if (!action) return state;
 
     switch (action.type) {
@@ -13,4 +13,4 @@ export default function (state = initialState, action) {
         default:
             return state;
     }
-}
+};
