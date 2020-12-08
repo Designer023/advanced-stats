@@ -25,10 +25,10 @@ export async function handler(event, context) {
     // }
 
     try {
-        const { code } = event.queryStringParameters;
+        const { refreshToken } = event.queryStringParameters;
 
-        if (!code) {
-            throw new Error("No token present in query");
+        if (!refreshToken) {
+            throw new Error("No refresh token present in query");
         }
 
         const data = await tokenClient({
@@ -37,8 +37,8 @@ export async function handler(event, context) {
             params: {
                 client_id: clientID,
                 client_secret: clientSecret,
-                code,
-                grant_type: "authorization_code"
+                refresh_token: refreshToken,
+                grant_type: "refresh_token"
             }
         })
             .then((response) => {
@@ -46,7 +46,6 @@ export async function handler(event, context) {
             })
             .catch((error) => {
                 throw new Error(error);
-                // return { statusCode: 500, body: JSON.stringify({ error: error.toString() }) };
             });
 
         return {

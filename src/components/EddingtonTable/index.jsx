@@ -1,18 +1,15 @@
 import React from "react";
-
-const tableHeaderClasses = "px-4 py-2 text-grey-600 dark:bg-gray-800";
-const tableClasses = "border border-green-500 px-4 py-2 text-gray-900 font-medium bg-green-50 dark:bg-gray-800";
-const tableClassesTodo = "border border-grey-800 px-4 py-2 text-gray-900 font-medium text-opacity-25";
+import { Table, TH, TD } from "../Tables";
 
 // eslint-disable-next-line react/prop-types
 const EddingtonTable = ({ data }) => {
     return (
-        <table className="table-auto w-full">
+        <Table>
             <thead>
                 <tr>
-                    <th className={tableHeaderClasses}>Distance</th>
-                    <th className={tableHeaderClasses}>Count</th>
-                    <th className={tableHeaderClasses}>Remaining</th>
+                    <TH>Distance</TH>
+                    <TH>Count</TH>
+                    <TH>Remaining</TH>
                 </tr>
             </thead>
             <tbody>
@@ -25,9 +22,9 @@ const EddingtonTable = ({ data }) => {
                         return (
                             // eslint-disable-next-line react/no-array-index-key
                             <tr key={i}>
-                                <td className={tableClasses}>{i}</td>
-                                <td className={tableClasses}>{n}</td>
-                                <td className={tableClasses}>☑️</td>
+                                <TD>{i}</TD>
+                                <TD>{n}</TD>
+                                <TD>☑️</TD>
                             </tr>
                         );
                     }
@@ -35,14 +32,14 @@ const EddingtonTable = ({ data }) => {
                     return (
                         // eslint-disable-next-line react/no-array-index-key
                         <tr key={i}>
-                            <td className={tableClassesTodo}>{i}</td>
-                            <td className={tableClassesTodo}>{n}</td>
-                            <td className={tableClassesTodo}>-{i - n}️</td>
+                            <TD muted>{i}</TD>
+                            <TD muted>{n}</TD>
+                            <TD muted>-{i - n}️</TD>
                         </tr>
                     );
                 })}
             </tbody>
-        </table>
+        </Table>
     );
 };
 

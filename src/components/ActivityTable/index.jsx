@@ -2,13 +2,8 @@ import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import moment from "moment";
 
-const tableHeaderClasses = "px-4 py-2 text-grey-600 dark:bg-gray-800";
-const tableClasses = "border border-grey-500 px-4 py-2 text-gray-900 font-medium bg-green-50 dark:bg-gray-800";
-// const tableClassesTodo = "border border-grey-500 px-4 py-2 text-gray-900 font-medium text-opacity-25";
-
-const round = (num) => {
-    return Math.round(num * 100 + Number.EPSILON) / 100;
-};
+import { Table, TD, TH } from "../Tables";
+import { KM, Minutes, Round } from "../Formatters";
 
 // eslint-disable-next-line react/prop-types
 const ActivityTable = ({ activityType }) => {
@@ -38,79 +33,41 @@ const ActivityTable = ({ activityType }) => {
         });
     }, [filtered]);
 
-    // const lastActivityDay = cumulative.slice(-1)[0];
-    //
-    // const lastDayNum = moment(lastActivityDay.start_date).dayOfYear();
-    // const lastDayOfYear = moment(lastActivityDay.start_date).endOf("year").dayOfYear();
-    //
-    // // create an array of day numbers reamining for this year
-    // const remainingDayNumbers = range(lastDayNum, lastDayOfYear + 1);
-    //
-    // // The distance still to run this year
-    // const lastRemainingDistance = lastActivityDay.remaining;
-    // const lastTotalDistance = lastActivityDay.total;
-    //
-    // // let remainingTotal = 0;
-    //
-    // const remainingDays = remainingDayNumbers.map((num) => {
-    //     const remainingPerDay = lastDayOfYear - num === 0 ? lastRemainingDistance : lastRemainingDistance / (lastDayOfYear + 1 - num);
-    //
-    //     return {
-    //         day: num,
-    //         remainingPerDay,
-    //         name: "Todo",
-    //         remaining: lastRemainingDistance,
-    //         total: lastTotalDistance,
-    //         type: "Run"
-    //     };
-    // });
-
     return (
-        <table className="table-auto">
+        <Table>
             <thead>
                 <tr>
-                    <th className={tableHeaderClasses}>Day</th>
-                    <th className={tableHeaderClasses}>Name</th>
-                    <th className={tableHeaderClasses}>Distance</th>
-                    <th className={tableHeaderClasses}>Time</th>
-                    <th className={tableHeaderClasses}>Elevation</th>
-                    <th className={tableHeaderClasses}>Total</th>
+                    <TH>Day</TH>
+                    <TH>Name</TH>
+                    <TH>Distance</TH>
+                    <TH>Time</TH>
+                    <TH>Elevation</TH>
+                    <TH>Total</TH>
                 </tr>
             </thead>
             <tbody>
                 {cumulative.map((activity) => {
                     return (
                         <tr key={activity.id}>
-                            <td className={tableClasses}>{activity.currentDay}</td>
-                            <td className={tableClasses}>{activity.name}</td>
-                            <td className={tableClasses}>{round(activity.distance / 1000)}</td>
-                            <td className={tableClasses}>{round(activity.moving_time / 60)}</td>
-                            <td className={tableClasses}>{round(activity.total_elevation_gain)}</td>
-                            {/* <td className={tableClasses}>{activity.type}</td> */}
-                            <td className={tableClasses}>{round(activity.total / 1000)}</td>
+                            <TD>{activity.currentDay}</TD>
+                            <TD>{activity.name}</TD>
+                            <TD>
+                                <KM meters={activity.distance} />
+                            </TD>
+                            <TD>
+                                <Minutes seconds={activity.moving_time} />
+                            </TD>
+                            <TD>
+                                <Round value={activity.total_elevation_gain} />
+                            </TD>
+                            <TD>
+                                <KM meters={activity.total} />
+                            </TD>
                         </tr>
                     );
                 })}
-
-                {/* {remainingDays.map((day) => { */}
-                {/*    // const day = moment(activity.start_date).dayOfYear(); */}
-
-                {/*    return ( */}
-                {/*        <tr key={day.day}> */}
-                {/*            <td className={tableClassesTodo}>{day.day}</td> */}
-                {/*            <td className={tableClassesTodo}> {day.name} </td> */}
-                {/*            <td className={tableClassesTodo}> - </td> */}
-                {/*            <td className={tableClassesTodo}> - </td> */}
-                {/*            <td className={tableClassesTodo}> - </td> */}
-                {/*            <td className={tableClassesTodo}> - </td> */}
-                {/*            <td className={tableClassesTodo}> {round(day.total / 1000)}</td> */}
-                {/*            {target ? <th className={tableClassesTodo}> {round(day.remaining / 1000)} </th> : null} */}
-                {/*            {target ? <th className={tableClassesTodo}> {round(day.remainingPerDay / 1000)} </th> : null} */}
-                {/*        </tr> */}
-                {/*    ); */}
-                {/* })} */}
             </tbody>
-        </table>
+        </Table>
     );
 };
 

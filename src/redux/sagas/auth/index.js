@@ -6,8 +6,6 @@ import { BEGIN_STRAVA_AUTH, VALIDATE_STRAVA_TOKEN } from "../../constants/auth";
 import { getAthlete } from "../../actions/athlete";
 
 const clientID = process.env.REACT_APP_STRAVA_CLIENT_ID;
-// Todo: Migrate to netlify Lambda to keep secure
-const clientSecret = process.env.STRAVA_CLIENT_SECRET;
 
 const tokenClient = axios.create({
     baseURL: "https://www.strava.com/oauth",
@@ -21,14 +19,11 @@ const netlifyClient = axios.create({
 
 const updateRefreshToken = () => {
     const refreshToken = localStorage.getItem("refreshToken");
-    return tokenClient({
-        url: "/token",
+    return netlifyClient({
+        url: "/stravaRefreshGrant",
         method: "post",
         params: {
-            client_id: clientID,
-            client_secret: clientSecret,
-            refresh_token: refreshToken,
-            grant_type: "refresh_token"
+            refreshToken
         }
     })
         .then((response) => {

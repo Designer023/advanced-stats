@@ -1,30 +1,21 @@
 import { useSelector } from "react-redux";
 import moment from "moment";
 import { Fragment, useState } from "react";
-// import ActivityDetailTable from "../../components/ActivityDetailTable";
-const tableHeaderClasses = "px-4 py-2 text-grey-600 dark:bg-green-800 dark:text-grey-100";
-const tableClasses = "border border-green-500 px-4 py-2 text-gray-900 font-medium bg-green-50 dark:bg-green-600 align-top";
-const tableClassesTodo = "border border-grey-800 px-4 py-2 text-gray-900 font-medium text-opacity-25 h-5 align-top dark:bg-grey-700:text-grey-200";
 
-const round = (num) => {
-    return Math.round(num * 100 + Number.EPSILON) / 100;
-};
+import { Table, TD, TH } from "../../components/Tables";
 
-// eslint-disable-next-line react/prop-types
-const KM = ({ meters }) => {
-    return <>{round(meters / 1000)}</>;
-};
+import { KM } from "../../components/Formatters";
+
 const RunDetailsPage = () => {
-    const { years, total } = useSelector((state) => state.processedData.activities.run);
+    const { years } = useSelector((state) => state.processedData.activities.run);
     const currentYear = moment().year();
     const [tab, setTab] = useState(currentYear);
 
-    console.log(years, total);
+    if (!years) return null;
     return (
         <div>
             <h1 className="text-5xl font-semibold mt-8 mb-8 text-gray-800">Run</h1>
             <hr />
-            {/* {activities && activities.length ? <ActivityDetailTable activityType="Run" target={3000000} /> : null} */}
 
             <nav className="flex flex-col sm:flex-row">
                 {Object.values(years).map(({ year }) => (
@@ -41,18 +32,20 @@ const RunDetailsPage = () => {
                 .map(({ year, days }) => (
                     <Fragment key={year}>
                         <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-800">{year}</h2>
-                        <table className="w-full mt-2 mb-8">
+                        <Table>
                             <thead>
                                 <tr>
-                                    <th className={tableHeaderClasses}>Date</th>
-                                    <th className={tableHeaderClasses}>DoY</th>
-                                    <th className={tableHeaderClasses}>Activities</th>
-                                    <th className={tableHeaderClasses}>Distance</th>
-                                    <th className={tableHeaderClasses}>Elevation</th>
+                                    <TH>Date</TH>
+                                    <TH>DoY</TH>
+                                    <TH>Activities</TH>
+                                    <TH>Distance</TH>
+                                    <TH>Elevation</TH>
 
-                                    <th className={tableHeaderClasses}>Day distance</th>
-                                    <th className={tableHeaderClasses}>Year cumulative Distance</th>
-                                    <th className={tableHeaderClasses}>Total cumulative Distance</th>
+                                    <TH>Day distance</TH>
+                                    <TH>Year cumulative Distance</TH>
+                                    <TH>Total cumulative Distance</TH>
+                                    <TH>Remaining</TH>
+                                    <TH>Needed per day</TH>
                                 </tr>
                             </thead>
                             <tbody>
@@ -61,11 +54,20 @@ const RunDetailsPage = () => {
                                         if (!day.activities.length) {
                                             return (
                                                 <tr key={day.date}>
-                                                    <td className={tableClassesTodo}>{moment(day.date).format("ddd, Do MMM")}</td>
-                                                    <td className={tableClassesTodo}>{day.day}</td>
-                                                    <td className={tableClassesTodo}>-</td>
-                                                    <td className={tableClassesTodo}>-</td>
-                                                    <td className={tableClassesTodo}>-</td>
+                                                    <TD muted>{moment(day.date).format("ddd, Do MMM")}</TD>
+                                                    <TD muted>{day.day}</TD>
+                                                    <TD muted>-</TD>
+                                                    <TD muted>-</TD>
+                                                    <TD muted>-</TD>
+                                                    <TD muted>-</TD>
+                                                    <TD muted>-</TD>
+                                                    <TD muted>-</TD>
+                                                    <TD muted>
+                                                        <KM meters={day.remainingYearTarget} />
+                                                    </TD>
+                                                    <TD muted>
+                                                        <KM meters={day.requiredPerDay} />
+                                                    </TD>
                                                 </tr>
                                             );
                                         }
@@ -76,30 +78,33 @@ const RunDetailsPage = () => {
                                                     <tr key={activity.upload_id}>
                                                         {i === 0 ? (
                                                             <>
-                                                                <td className={tableClasses} rowSpan={day.activities.length}>
-                                                                    {moment(day.date).format("ddd, Do MMM")}
-                                                                </td>
-                                                                <td className={tableClasses} rowSpan={day.activities.length}>
-                                                                    {day.day}
-                                                                </td>
+                                                                <TD rowSpan={day.activities.length}>{moment(day.date).format("ddd, Do MMM")}</TD>
+                                                                <TD rowSpan={day.activities.length}>{day.day}</TD>
                                                             </>
                                                         ) : null}
-                                                        <td className={tableClasses}>{activity.name}</td>
-                                                        <td className={tableClasses}>
+                                                        <TD>{activity.name}</TD>
+                                                        <TD>
                                                             <KM meters={activity.distance} />
-                                                        </td>
-                                                        <td className={tableClasses}>{activity.total_elevation_gain}</td>
+                                                        </TD>
+                                                        <TD>{activity.total_elevation_gain}</TD>
                                                         {i === 0 ? (
                                                             <>
-                                                                <td className={tableClasses} rowSpan={day.activities.length}>
+                                                                <TD rowSpan={day.activities.length}>
                                                                     <KM meters={day.total} />
-                                                                </td>
-                                                                <td className={tableClasses} rowSpan={day.activities.length}>
-                                                                    -
-                                                                </td>
-                                                                <td className={tableClasses} rowSpan={day.activities.length}>
-                                                                    -
-                                                                </td>
+                                                                </TD>
+                                                                <TD rowSpan={day.activities.length}>
+                                                                    <KM meters={day.yearCumulative} />
+                                                                </TD>
+                                                                <TD rowSpan={day.activities.length}>
+                                                                    <KM meters={day.totalCumulative} />
+                                                                </TD>
+
+                                                                <TD rowSpan={day.activities.length}>
+                                                                    <KM meters={day.remainingYearTarget} />
+                                                                </TD>
+                                                                <TD rowSpan={day.activities.length}>
+                                                                    <KM meters={day.requiredPerDay} />
+                                                                </TD>
                                                             </>
                                                         ) : null}
                                                     </tr>
@@ -109,7 +114,7 @@ const RunDetailsPage = () => {
                                     })}
                                 </>
                             </tbody>
-                        </table>
+                        </Table>
                     </Fragment>
                 ))}
         </div>
