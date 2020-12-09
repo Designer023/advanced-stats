@@ -9,6 +9,7 @@ const RideDetailsPage = () => {
     const { years } = useSelector((state) => state.processedData.activities.ride);
     const currentYear = moment().year();
     const [tab, setTab] = useState(currentYear);
+    const displayDaysWithoutActivity = false;
 
     if (!years) return null;
     return (
@@ -51,6 +52,8 @@ const RideDetailsPage = () => {
                                 <>
                                     {days.map((day) => {
                                         if (!day.activities.length) {
+                                            if (!displayDaysWithoutActivity) return null;
+
                                             return (
                                                 <tr key={day.date}>
                                                     <TD muted>{moment(day.date).format("ddd, Do MMM")}</TD>

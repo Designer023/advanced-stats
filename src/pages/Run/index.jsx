@@ -10,6 +10,8 @@ const RunDetailsPage = () => {
     const { years } = useSelector((state) => state.processedData.activities.run);
     const currentYear = moment().year();
     const [tab, setTab] = useState(currentYear);
+    const displayDaysWithoutActivity = false;
+    const today = moment().startOf("day");
 
     if (!years) return null;
     return (
@@ -29,9 +31,15 @@ const RunDetailsPage = () => {
 
             {Object.values(years)
                 .filter((item) => item.year === tab)
-                .map(({ year, days }) => (
+                .map(({ year, days, total }) => (
                     <Fragment key={year}>
                         <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-800">{year}</h2>
+                        <h3 className="text-2xl mt-2 mb-2 text-gray-800">{days.length} activities</h3>
+                        <h3 className="text-2xl mt-2 mb-2 text-gray-800">
+                            <KM meters={total} />
+                            KM covered
+                        </h3>
+
                         <Table>
                             <thead>
                                 <tr>
@@ -52,9 +60,12 @@ const RunDetailsPage = () => {
                                 <>
                                     {days.map((day) => {
                                         if (!day.activities.length) {
+                                            const date = moment(day.date);
+                                            const isFuture = today.isBefore(date);
+                                            if (!displayDaysWithoutActivity && !isFuture) return null;
                                             return (
                                                 <tr key={day.date}>
-                                                    <TD muted>{moment(day.date).format("ddd, Do MMM")}</TD>
+                                                    <TD muted>{date.format("ddd, Do MMM")}</TD>
                                                     <TD muted>{day.day}</TD>
                                                     <TD muted>-</TD>
                                                     <TD muted>-</TD>

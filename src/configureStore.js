@@ -4,7 +4,7 @@ import { routerMiddleware } from "connected-react-router";
 import thunk from "redux-thunk";
 import createSagaMiddleware from "redux-saga";
 
-import throttle from "lodash/throttle";
+import debounce from "lodash/debounce";
 import createRootReducer from "./redux/reducers";
 import { loadState, saveState } from "./localStorage";
 
@@ -26,13 +26,13 @@ function configureStore() {
     sagaMiddleware.run(rootSaga);
 
     store.subscribe(
-        throttle(() => {
+        debounce(() => {
             saveState({
                 auth: store.getState().auth,
                 athlete: store.getState().athlete,
                 processedData: store.getState().processedData
             });
-        }, 1000)
+        }, 5000)
     );
 
     // Hot reloading

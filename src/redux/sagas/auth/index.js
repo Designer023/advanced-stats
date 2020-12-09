@@ -1,21 +1,11 @@
 import { call, put, takeEvery, select } from "redux-saga/effects";
-import axios from "axios";
 import { push } from "connected-react-router";
+import { tokenClient, netlifyClient } from "../../../api";
 import { updateAuthTokens } from "../../actions/auth";
 import { BEGIN_STRAVA_AUTH, VALIDATE_STRAVA_TOKEN } from "../../constants/auth";
 import { getAthlete } from "../../actions/athlete";
 
 const clientID = process.env.REACT_APP_STRAVA_CLIENT_ID;
-
-const tokenClient = axios.create({
-    baseURL: "https://www.strava.com/oauth",
-    timeout: 3000
-});
-
-const netlifyClient = axios.create({
-    baseURL: "/.netlify/functions",
-    timeout: 3000
-});
 
 const updateRefreshToken = () => {
     const refreshToken = localStorage.getItem("refreshToken");

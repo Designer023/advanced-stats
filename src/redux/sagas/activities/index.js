@@ -1,29 +1,10 @@
-import axios from "axios";
 import get from "lodash/get";
 import moment from "moment";
 import { call, put, select, takeEvery } from "redux-saga/effects";
+import { apiClient } from "../../../api";
 import { validateAuthTokens } from "../auth";
 
 const getActivity = (epoch, page = 1) => {
-    const BASE_URL = "https://www.strava.com/api/v3";
-    const apiClient = axios.create({ baseURL: BASE_URL });
-
-    apiClient.interceptors.request.use(
-        (config) => {
-            const token = localStorage.getItem("accessToken");
-
-            if (token) {
-                // eslint-disable-next-line no-param-reassign
-                config.headers.Authorization = `Bearer ${token}`;
-            }
-
-            return config;
-        },
-        (error) => {
-            Promise.reject(error);
-        }
-    );
-
     return apiClient({
         url: `/athlete/activities?per_page=30&after=${epoch}&page=${page}`,
         method: "get"
@@ -45,7 +26,8 @@ const getLastActivityTimestamp = (state) => {
     }
 
     // TODO: set default year as env
-    return moment().year(2019).startOf("year").unix();
+    const initialYear = Number(process.env.REACT_APP_INITIALYEAR || 2019);
+    return moment().year(initialYear).startOf("year").unix();
 };
 
 function* updateAthleteActivity() {

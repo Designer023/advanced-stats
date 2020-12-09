@@ -3,30 +3,9 @@ const initialState = {
     loading: false,
     error: false,
     activities: {
-        run: [],
-        ride: []
+        run: {},
+        ride: {}
     },
-    // activities: {
-    //     // ACTIVITY DATA IS FROM STRAVA WITH EXTRA INFORMATION ADDED
-    //     run: [
-    //         // {
-    //         //    activity: BOOL false is no activity
-    //         //     ...stravaInfo,
-    //         //     dayOfYear : INT
-    //         //    yearEddington,
-    //         //    overallEddington
-    //         //    rolling3, 7, 14, 30
-    //         //     target distance,
-    //         //     ran distance
-    //         //     remaining distance
-    //         //     daily remaining days
-    //         //      daily remaining distance
-    //         // }
-    //     ],
-    //     ride: {
-    //         activities: []
-    //     }
-    // },
     eddington: {
         run: {
             overall: 0,

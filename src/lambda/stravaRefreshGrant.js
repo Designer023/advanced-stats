@@ -1,17 +1,12 @@
 // Docs on event and context https://www.netlify.com/docs/functions/#the-handler-method
 
-import axios from "axios";
 import { config } from "dotenv";
+import { tokenClient } from "../api";
 
 config();
 
 const clientSecret = process.env.STRAVA_CLIENT_SECRET;
 const clientID = process.env.REACT_APP_STRAVA_CLIENT_ID;
-
-const tokenClient = axios.create({
-    baseURL: "https://www.strava.com/oauth",
-    timeout: 3000
-});
 
 // eslint-disable-next-line import/prefer-default-export,no-unused-vars,consistent-return
 export async function handler(event, context) {

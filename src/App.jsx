@@ -9,7 +9,7 @@ import AuthStatus from "./components/AuthStatus";
 import HomePage from "./pages/Home";
 import RideDetailsPage from "./pages/Ride";
 import EddingtionDetailsPage from "./pages/Eddington";
-import Banner from "./components/Banner";
+// import Banner from "./components/Banner";
 
 function App() {
     const { isLoading } = useSelector((state) => state.app);
@@ -17,7 +17,7 @@ function App() {
     return (
         <div className={`pb-20 relative ${isLoading ? "overflow-hidden h-screen" : ""}`}>
             <Loading />
-            <Banner />
+            {/* <Banner /> */}
             <Nav />
             <div className="container mx-auto">
                 <Switch>
