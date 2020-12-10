@@ -48,8 +48,10 @@ function* updateAthleteActivity() {
                 break;
             } else {
                 yield put({ type: "LOADING_ACTIVITIES_PAGE_COMPLETE", payload: data });
+                const fromDate = moment(data.slice(-1)[0].start_date).format("Do MMM YYYY");
+
                 page += 1;
-                yield put({ type: "SET_LOADING_MESSAGE", payload: `Retrieving page ${page}...` });
+                yield put({ type: "SET_LOADING_MESSAGE", payload: `Retrieving activities from ${fromDate}...` });
             }
         }
     } catch (e) {
