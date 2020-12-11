@@ -1,12 +1,11 @@
 import { createBrowserHistory } from "history";
 import { applyMiddleware, compose, createStore } from "redux";
 import { routerMiddleware } from "connected-react-router";
-import thunk from "redux-thunk";
 import createSagaMiddleware from "redux-saga";
 
 import debounce from "lodash/debounce";
 import createRootReducer from "./redux/reducers";
-import { loadState, saveState } from "./localStorage";
+import { loadState, saveState } from "./persistance/localStorage";
 
 // import appMiddleware from "./redux/middleware/app";
 
@@ -21,7 +20,7 @@ const persistedState = loadState();
 // eslint-disable-next-line no-unused-vars
 function configureStore() {
     const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-    const store = createStore(createRootReducer(history), persistedState, composeEnhancer(applyMiddleware(routerMiddleware(history), thunk, sagaMiddleware)));
+    const store = createStore(createRootReducer(history), persistedState, composeEnhancer(applyMiddleware(routerMiddleware(history), sagaMiddleware)));
 
     sagaMiddleware.run(rootSaga);
 
