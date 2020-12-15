@@ -5,6 +5,8 @@ import range from "lodash/range";
 
 import eddingtonValue from "../../../utils/eddington";
 
+const average = (arr) => arr.reduce((p, c) => p + c, 0) / arr.length;
+
 const processEddington = (activities, activityTypes) => {
     const data = {};
     activityTypes.forEach((type) => {
@@ -114,6 +116,8 @@ const processActivities = (activities, activityTypes) => {
             // Math the results
 
             let tc = 0;
+            const rollingAverage = [];
+            const maxRA = 28;
 
             Object.keys(activityByYearsNew).forEach((yearNum) => {
                 const { days } = activityByYearsNew[yearNum];
@@ -129,6 +133,16 @@ const processActivities = (activities, activityTypes) => {
                     tc += dayC;
                     yc += dayC;
 
+                    // rolling Average
+                    rollingAverage.push(dayC);
+
+                    while (rollingAverage.length > maxRA) {
+                        rollingAverage.shift();
+                    }
+
+                    const ra30 = average(rollingAverage);
+                    const ra7 = average(rollingAverage.slice(-7));
+
                     // Update day:
                     activityByYearsNew[yearNum].days[currentDay.day - 1] = {
                         ...currentDay,
@@ -136,83 +150,14 @@ const processActivities = (activities, activityTypes) => {
                         yearCumulative: yc,
                         totalCumulative: tc,
                         remainingYearTarget: remaining - dayC, // Remove anything ran for today
-                        requiredPerDay
+                        requiredPerDay,
+                        ra30,
+                        ra7
                     };
                 });
 
                 activityByYearsNew[yearNum].total = yc;
             });
-
-            // console.log(activityByYearsNew);
-            //
-            // const activitiesByYear = {};
-            //
-            // let yearCumulative = 0;
-            // let totalCumulative = 0;
-            // let currentYear = null;
-            //
-            // const target = 3000 * 1000; // todo get from state / settings
-            //
-            // let runningTotalDistance = 0;
-            // filteredActivity.forEach((fActivity) => {
-            //     const year = moment(fActivity.start_date).year();
-            //
-            //     if (!currentYear || currentYear !== year) {
-            //         currentYear = year;
-            //         yearCumulative = 0;
-            //     }
-            //
-            //     const daysInYear = moment(fActivity.start_date).endOf("year").dayOfYear();
-            //     // check if year exists,
-            //     const date = moment(fActivity.start_date);
-            //
-            //     // Cumulative
-            //     yearCumulative += fActivity.distance;
-            //     totalCumulative += fActivity.distance;
-            //     const remainingYearTarget = target - yearCumulative;
-            //     const requiredPerDay = remainingYearTarget / (daysInYear - date.dayOfYear() + 1);
-            //
-            //     if (typeof activitiesByYear[year] === "undefined") {
-            //         const days = range(1, daysInYear + 1);
-            //         activitiesByYear[year] = {
-            //             year,
-            //             total: 0,
-            //             days: [
-            //                 ...days.map((day) => ({
-            //                     day,
-            //                     date: moment().year(year).dayOfYear(Number(day)).startOf("day").format(),
-            //                     activities: [],
-            //                     total: 0,
-            //                     yearCumulative,
-            //                     totalCumulative,
-            //                     remainingYearTarget,
-            //                     requiredPerDay
-            //                 }))
-            //             ]
-            //         };
-            //     }
-            //
-            //     const dayOYIndex = date.dayOfYear() - 1; // 1- 366 so shift by 1 for 0 based!
-            //     activitiesByYear[year].days[dayOYIndex].activities.push(fActivity);
-            //
-            //     runningTotalDistance += fActivity.distance;
-            //
-            //     // Today
-            //     activitiesByYear[year].days[dayOYIndex].total += fActivity.distance;
-            //     // Year
-            //     activitiesByYear[year].total += fActivity.distance;
-            //
-            //     // Cumulative
-            //     activitiesByYear[year].days[dayOYIndex].yearCumulative = yearCumulative;
-            //     activitiesByYear[year].days[dayOYIndex].totalCumulative = totalCumulative;
-            //
-            //     // Recalcualte for the day
-            //     const reRemainingYearTarget = target - yearCumulative;
-            //     const reRequiredPerDay = remainingYearTarget / (daysInYear - date.dayOfYear() + 1);
-            //
-            //     activitiesByYear[year].days[dayOYIndex].remainingYearTarget = reRemainingYearTarget;
-            //     activitiesByYear[year].days[dayOYIndex].requiredPerDay = reRequiredPerDay;
-            // });
 
             data[type.toLowerCase()] = {
                 years: activityByYearsNew,

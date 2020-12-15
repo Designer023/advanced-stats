@@ -10,7 +10,7 @@ const RunDetailsPage = () => {
     const { years } = useSelector((state) => state.processedData.activities.run);
     const currentYear = moment().year();
     const [tab, setTab] = useState(currentYear);
-    const displayDaysWithoutActivity = false;
+    const displayDaysWithoutActivity = true;
     const today = moment().startOf("day");
 
     if (!years) return null;
@@ -54,6 +54,8 @@ const RunDetailsPage = () => {
                                     <TH>Total cumulative Distance</TH>
                                     <TH>Remaining</TH>
                                     <TH>Needed per day</TH>
+                                    <TH muted>RA 30</TH>
+                                    <TH muted>RA 7</TH>
                                 </tr>
                             </thead>
                             <tbody>
@@ -61,7 +63,7 @@ const RunDetailsPage = () => {
                                     {days.map((day) => {
                                         if (!day.activities.length) {
                                             const date = moment(day.date);
-                                            const isFuture = today.isBefore(date);
+                                            const isFuture = today.isBefore(date.clone().add(1, "day"));
                                             if (!displayDaysWithoutActivity && !isFuture) return null;
                                             return (
                                                 <tr key={day.date}>
@@ -78,6 +80,12 @@ const RunDetailsPage = () => {
                                                     </TD>
                                                     <TD muted>
                                                         <KM meters={day.requiredPerDay} />
+                                                    </TD>
+                                                    <TD muted>
+                                                        <KM meters={day.ra30} />
+                                                    </TD>
+                                                    <TD muted>
+                                                        <KM meters={day.ra7} />
                                                     </TD>
                                                 </tr>
                                             );
@@ -115,6 +123,12 @@ const RunDetailsPage = () => {
                                                                 </TD>
                                                                 <TD rowSpan={day.activities.length}>
                                                                     <KM meters={day.requiredPerDay} />
+                                                                </TD>
+                                                                <TD rowSpan={day.activities.length}>
+                                                                    <KM meters={day.ra30} />
+                                                                </TD>
+                                                                <TD rowSpan={day.activities.length}>
+                                                                    <KM meters={day.ra7} />
                                                                 </TD>
                                                             </>
                                                         ) : null}
