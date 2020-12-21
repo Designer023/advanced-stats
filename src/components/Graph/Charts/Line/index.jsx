@@ -6,15 +6,17 @@ import { dataPropType } from "../../PropTypes";
 // eslint-disable-next-line no-unused-vars
 import { minValue, maxValue, parseData, scaleData } from "../../utils";
 
-const plotChart = ({ chartRef, data, width, height, x, y, min, max, theme, xDataType, yDataType }) => {
+const plotChart = ({ chartRef, data, width, height, x, y, min, max, theme, xDataType, yDataType, xScaler, yScaler }) => {
     const plotArea = d3.select(chartRef.current);
 
-    const yScaler = scaleData(yDataType)()
-        .domain([minValue(data, "y", min), maxValue(data, "y", max)])
-        .range([height, 0]); // flip axis
+    const yScalerType =
+        yScaler ||
+        scaleData(yDataType)()
+            .domain([minValue(data, "y", min), maxValue(data, "y", max)])
+            .range([height, 0]); // flip axis
 
-    const xDomain = d3.extent(data, (d) => parseData(d.x, xDataType));
-    const xScaler = scaleData(xDataType)().domain(xDomain).range([0, width]);
+    const xDomain = xScaler ? null : d3.extent(data, (d) => parseData(d.x, xDataType));
+    const xScalerType = xScaler || scaleData(xDataType)().domain(xDomain).range([0, width]);
 
     plotArea.attr("width", width).attr("height", height).attr("transform", `translate(${x}, ${y})`);
     plotArea.selectAll("path").remove(); // Remove existing content!
@@ -29,12 +31,12 @@ const plotChart = ({ chartRef, data, width, height, x, y, min, max, theme, xData
             "d",
             d3
                 .line()
-                .x((d) => xScaler(parseData(d.x, xDataType)))
-                .y((d) => yScaler(d.y))
+                .x((d) => xScalerType(parseData(d.x, xDataType)))
+                .y((d) => yScalerType(d.y))
         );
 };
 
-const LineChart = ({ data, width, height, x, y, min, max, theme, xDataType, yDataType }) => {
+const LineChart = ({ data, width, height, x, y, min, max, theme, xDataType, yDataType, xScaler, yScaler }) => {
     const chartRef = useRef(null);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -49,7 +51,9 @@ const LineChart = ({ data, width, height, x, y, min, max, theme, xDataType, yDat
         max,
         theme,
         xDataType,
-        yDataType
+        yDataType,
+        xScaler,
+        yScaler
     };
 
     useEffect(() => {
@@ -80,14 +84,18 @@ LineChart.propTypes = {
     min: PropTypes.number,
     max: PropTypes.number,
     xDataType: PropTypes.string,
-    yDataType: PropTypes.string
+    yDataType: PropTypes.string,
+    xScaler: PropTypes.func,
+    yScaler: PropTypes.func
 };
 
 LineChart.defaultProps = {
     min: 0,
     max: null,
     xDataType: "number",
-    yDataType: "number"
+    yDataType: "number",
+    xScaler: null,
+    yScaler: null
 };
 
 export default LineChart;

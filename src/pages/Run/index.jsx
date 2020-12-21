@@ -10,6 +10,7 @@ import { KM } from "../../components/Formatters";
 import BarChart from "../../components/Graph/Charts/Bar";
 import LineChart from "../../components/Graph/Charts/Line";
 import Graph from "../../components/Graph";
+import MultiPlot from "../../components/Graph/MultiPlot";
 
 const DISPLAY = {
     GRAPH: "GRAPH",
@@ -76,29 +77,36 @@ const RunDetailsPage = () => {
                                         color: "#35cb6c"
                                     }}
                                 />
-                                <h3>7 day RA </h3>
-                                <Graph
-                                    chartComponent={BarChart}
-                                    data={days.map((day) => {
-                                        return { y: day.ra7, x: day.date };
-                                    })}
-                                    theme={{
-                                        color: "#ef931e",
-                                        colSpacing: 0
-                                    }}
+
+                                <h3>Rolling averages </h3>
+
+                                <MultiPlot
+                                    xDataType="date"
+                                    min={0}
+                                    data={[
+                                        {
+                                            chartComponent: LineChart,
+                                            data: days.map((day) => {
+                                                return { y: day.ra30, x: day.date };
+                                            }),
+                                            theme: {
+                                                color: "#f3cb4f"
+                                            },
+                                            label: "RA30"
+                                        },
+                                        {
+                                            chartComponent: LineChart,
+                                            data: days.map((day) => {
+                                                return { y: day.ra7, x: day.date };
+                                            }),
+                                            theme: {
+                                                color: "#e92088"
+                                            },
+                                            label: "RA7"
+                                        }
+                                    ]}
                                 />
 
-                                <h3>30 day RA </h3>
-                                <Graph
-                                    chartComponent={LineChart}
-                                    xDataType="date"
-                                    theme={{
-                                        color: "#f3cb4f"
-                                    }}
-                                    data={days.map((day) => {
-                                        return { y: day.ra30, x: day.date };
-                                    })}
-                                />
                                 <h3>Needed per day</h3>
                                 <Graph
                                     chartComponent={BarChart}
