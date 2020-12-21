@@ -8,6 +8,7 @@ import Button from "../../components/Button";
 import { KM } from "../../components/Formatters";
 
 import BarChart from "../../components/Graph/Charts/Bar";
+import LineChart from "../../components/Graph/Charts/Line";
 import Graph from "../../components/Graph";
 
 const DISPLAY = {
@@ -69,7 +70,7 @@ const RunDetailsPage = () => {
                                 <Graph
                                     chartComponent={BarChart}
                                     data={days.map((day) => {
-                                        return { value: day.total, date: day.date };
+                                        return { y: day.total, x: day.date };
                                     })}
                                     theme={{
                                         color: "#35cb6c"
@@ -79,7 +80,7 @@ const RunDetailsPage = () => {
                                 <Graph
                                     chartComponent={BarChart}
                                     data={days.map((day) => {
-                                        return { value: day.ra7, date: day.date };
+                                        return { y: day.ra7, x: day.date };
                                     })}
                                     theme={{
                                         color: "#ef931e",
@@ -89,12 +90,13 @@ const RunDetailsPage = () => {
 
                                 <h3>30 day RA </h3>
                                 <Graph
-                                    chartComponent={BarChart}
+                                    chartComponent={LineChart}
+                                    xDataType="date"
                                     theme={{
                                         color: "#f3cb4f"
                                     }}
                                     data={days.map((day) => {
-                                        return { value: day.ra30, date: day.date };
+                                        return { y: day.ra30, x: day.date };
                                     })}
                                 />
                                 <h3>Needed per day</h3>
@@ -104,7 +106,7 @@ const RunDetailsPage = () => {
                                         color: "#3c3c3c"
                                     }}
                                     data={days.map((day) => {
-                                        return { value: day.requiredPerDay, date: day.date };
+                                        return { y: day.requiredPerDay, x: day.date };
                                     })}
                                     // max={12000}
                                     min={5000}
@@ -116,7 +118,7 @@ const RunDetailsPage = () => {
                                         color: "#b3b3b3"
                                     }}
                                     data={days.map((day) => {
-                                        return { value: day.remainingYearTarget, date: day.date };
+                                        return { y: day.remainingYearTarget, x: day.date };
                                     })}
                                 />
                             </>

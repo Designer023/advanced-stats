@@ -1,44 +1,40 @@
-/* eslint-disable no-unused-vars */
 import { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import * as d3 from "d3";
 import { dataPropType } from "../../PropTypes";
 
-import { minValue, maxValue, scaleData, parseData } from "../../utils";
+// eslint-disable-next-line no-unused-vars
+import { minValue, maxValue, parseData, scaleData } from "../../utils";
 
 const plotChart = ({ chartRef, data, width, height, x, y, min, max, theme, xDataType, yDataType }) => {
-    const yScale = scaleData(yDataType)()
-        .domain([minValue(data, "y", min), maxValue(data, "y", max)])
-        .range([0, height]);
-
     const plotArea = d3.select(chartRef.current);
 
-    plotArea.attr("width", width).attr("height", height).attr("transform", `translate(${x}, ${y})`);
-    plotArea.selectAll("rect").remove(); // Remove existing content!
-
-    const colSpacing = width < data.length * (1 + theme.colSpacing) ? 0 : theme.colSpacing;
-    const columnWidth = width / data.length - colSpacing;
-    const colW = columnWidth < 0.5 ? 0.5 : columnWidth;
+    const yScaler = scaleData(yDataType)()
+        .domain([minValue(data, "y", min), maxValue(data, "y", max)])
+        .range([height, 0]); // flip axis
 
     const xDomain = d3.extent(data, (d) => parseData(d.x, xDataType));
     const xScaler = scaleData(xDataType)().domain(xDomain).range([0, width]);
 
+    plotArea.attr("width", width).attr("height", height).attr("transform", `translate(${x}, ${y})`);
+    plotArea.selectAll("path").remove(); // Remove existing content!
+
     plotArea
-        .selectAll("rect")
-        .data(data)
-        .enter()
-        .append("rect")
-        // .attr("x", (d) => i * (colW + colSpacing))
-        .attr("x", (d) => xScaler(parseData(d.x, xDataType)))
-        // .x((d, i) => xScaler(parseData(d.x, xDataType)))
-        .attr("y", (d) => height - yScale(d.y))
-        .attr("width", colW)
-        .attr("height", (d) => yScale(d.y))
-        // eslint-disable-next-line react/prop-types
-        .attr("fill", theme.color);
+        .append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", theme.color)
+        .attr("stroke-width", 1.5)
+        .attr(
+            "d",
+            d3
+                .line()
+                .x((d) => xScaler(parseData(d.x, xDataType)))
+                .y((d) => yScaler(d.y))
+        );
 };
 
-const BarChart = ({ data, width, height, x, y, min, max, theme, xDataType, yDataType }) => {
+const LineChart = ({ data, width, height, x, y, min, max, theme, xDataType, yDataType }) => {
     const chartRef = useRef(null);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -67,12 +63,12 @@ const BarChart = ({ data, width, height, x, y, min, max, theme, xDataType, yData
         if (data && chartRef.current) {
             plotChart(plotOptions);
         }
-    }, [data, height, max, min, theme, width, x, y, plotOptions]);
+    }, [data, height, max, min, theme, width, x, y, xDataType, plotOptions]);
 
     return <g ref={chartRef} />;
 };
 
-BarChart.propTypes = {
+LineChart.propTypes = {
     data: dataPropType.isRequired,
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
@@ -87,11 +83,11 @@ BarChart.propTypes = {
     yDataType: PropTypes.string
 };
 
-BarChart.defaultProps = {
+LineChart.defaultProps = {
     min: 0,
     max: null,
     xDataType: "number",
     yDataType: "number"
 };
 
-export default BarChart;
+export default LineChart;

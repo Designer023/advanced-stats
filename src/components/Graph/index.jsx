@@ -15,7 +15,7 @@ const baseTheme = {
 };
 
 // eslint-disable-next-line react/prop-types
-const Graph = ({ data, height, theme, min, max, log, chartComponent: ChartComponent }) => {
+const Graph = ({ data, height, theme, min, max, xDataType, yDataType, chartComponent: ChartComponent }) => {
     const graphRef = useRef(null);
     const { width: winWidth } = useWindowSize();
 
@@ -46,9 +46,9 @@ const Graph = ({ data, height, theme, min, max, log, chartComponent: ChartCompon
     return (
         <div ref={graphRef} style={{ width: "100%" }}>
             <svg width={elWidth} height={200}>
-                <ChartComponent theme={mergedTheme} data={data} width={plotWidth} height={plotHeight} x={plotX} y={plotY} min={min} max={max} log={log} />
-                <XAxis width={xAxisWidth} height={xAxisHeight} x={hX} y={hY} data={data} theme={mergedTheme} />
-                <YAxis width={vAxiswidth} height={vAxisHeight} x={vX} y={vY} data={data} min={min} max={max} log={log} theme={mergedTheme} />
+                <ChartComponent theme={mergedTheme} data={data} width={plotWidth} height={plotHeight} x={plotX} y={plotY} min={min} max={max} xDataType={xDataType} yDataType={yDataType} />
+                <XAxis width={xAxisWidth} height={xAxisHeight} x={hX} y={hY} data={data} theme={mergedTheme} xDataType={xDataType} />
+                <YAxis width={vAxiswidth} height={vAxisHeight} x={vX} y={vY} data={data} min={min} max={max} theme={mergedTheme} yDataType={yDataType} />
             </svg>
         </div>
     );
@@ -63,7 +63,8 @@ Graph.propTypes = {
     height: PropTypes.number,
     min: PropTypes.number,
     max: PropTypes.number,
-    log: PropTypes.bool
+    xDataType: PropTypes.string,
+    yDataType: PropTypes.string
 };
 
 Graph.defaultProps = {
@@ -72,7 +73,8 @@ Graph.defaultProps = {
     height: 200,
     min: 0,
     max: null,
-    log: false
+    xDataType: "date",
+    yDataType: "number"
 };
 
 export default Graph;
