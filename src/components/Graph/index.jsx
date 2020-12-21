@@ -8,6 +8,7 @@ import XAxis from "./Axis/XAxis";
 import YAxis from "./Axis/YAxis";
 
 import { dataPropType } from "./PropTypes";
+import { useDimensions } from "./hooks";
 
 const baseTheme = {
     color: "#ccc",
@@ -18,8 +19,9 @@ const baseTheme = {
 const Graph = ({ data, height, theme, min, max, xDataType, yDataType, chartComponent: ChartComponent }) => {
     const graphRef = useRef(null);
     const { width: winWidth } = useWindowSize();
-
     const [elWidth, setElWidth] = useState(100);
+
+    const { plotWidth, plotHeight, plotX, plotY, xAxisWidth, xAxisHeight, hX, hY, vAxiswidth, vAxisHeight, vX, vY } = useDimensions({ height, elWidth });
 
     const mergedTheme = merge({}, baseTheme, theme);
 
@@ -28,20 +30,6 @@ const Graph = ({ data, height, theme, min, max, xDataType, yDataType, chartCompo
             setElWidth(graphRef.current.offsetWidth);
         }
     }, [winWidth, data]);
-
-    const padding = 5;
-    const vAxiswidth = 50;
-    const xAxisHeight = 30;
-    const vAxisHeight = height - padding * 2 - xAxisHeight;
-    const xAxisWidth = elWidth - padding * 2 - vAxiswidth;
-    const plotWidth = elWidth - padding * 2 - vAxiswidth;
-    const plotHeight = height - padding * 2 - xAxisHeight;
-    const plotX = padding + vAxiswidth;
-    const plotY = padding;
-    const vX = padding + vAxiswidth;
-    const vY = padding;
-    const hX = padding + vAxiswidth;
-    const hY = padding + plotHeight;
 
     return (
         <div ref={graphRef} style={{ width: "100%" }}>
