@@ -1,13 +1,14 @@
 /* eslint-disable no-unused-vars */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, createContext } from "react";
 import PropTypes from "prop-types";
 import merge from "lodash/merge";
 import * as d3 from "d3";
 import useWindowSize from "../../hooks/useWindowSize";
 
-import BarChart from "./Charts/Bar";
+// import BarChart from "./Charts/Bar";
 import XAxis from "./Axis/XAxis";
 import YAxis from "./Axis/YAxis";
+import Legend from "./Legend";
 
 import { dataPropType } from "./PropTypes";
 import { useDimensions } from "./hooks";
@@ -17,6 +18,8 @@ const baseTheme = {
     color: "#ccc",
     colSpacing: 0.5
 };
+
+export const PlotContext = createContext({});
 
 // eslint-disable-next-line react/prop-types
 const MultiPlot = ({ data, height, min, max, xDataType, yDataType, theme }) => {
@@ -48,18 +51,36 @@ const MultiPlot = ({ data, height, min, max, xDataType, yDataType, theme }) => {
 
     return (
         <div ref={graphRef} style={{ width: "100%" }}>
-            <svg width={elWidth} height={200}>
-                {data.map((item) => {
-                    const { chartComponent: ChartComponent, data: plotData, theme: plotTheme, label } = item;
-                    const mergedChartTheme = merge({}, baseTheme, plotTheme);
+            <PlotContext.Provider value={{ a: 1 }}>
+                <svg width={elWidth} height={200}>
+                    <Legend data={data.map((item) => [item.label, item.theme.color])} />
+                    {data.map((item) => {
+                        const { chartComponent: ChartComponent, data: plotData, theme: plotTheme, label } = item;
+                        const mergedChartTheme = merge({}, baseTheme, plotTheme);
 
-                    return (
-                        <ChartComponent key={label} theme={mergedChartTheme} data={plotData} width={plotWidth} height={plotHeight} x={plotX} y={plotY} min={min} max={max} xDataType={xDataType} yDataType={yDataType} yScaler={yScaler} xScaler={xScaler} />
-                    );
-                })}
-                <XAxis width={xAxisWidth} height={xAxisHeight} x={hX} y={hY} data={data} theme={mergedTheme} xDataType={xDataType} yScaler={yScaler} xScaler={xScaler} />
-                <YAxis width={vAxiswidth} height={vAxisHeight} x={vX} y={vY} data={data} min={min} max={max} theme={mergedTheme} yDataType={yDataType} yScaler={yScaler} />
-            </svg>
+                        return (
+                            <ChartComponent
+                                key={label}
+                                theme={mergedChartTheme}
+                                data={plotData}
+                                width={plotWidth}
+                                height={plotHeight}
+                                x={plotX}
+                                y={plotY}
+                                min={min}
+                                max={max}
+                                xDataType={xDataType}
+                                yDataType={yDataType}
+                                yScaler={yScaler}
+                                xScaler={xScaler}
+                            />
+                        );
+                    })}
+                    {/* todo: remove data props */}
+                    <XAxis width={xAxisWidth} height={xAxisHeight} x={hX} y={hY} data={data} theme={mergedTheme} xDataType={xDataType} yScaler={yScaler} xScaler={xScaler} />
+                    <YAxis width={vAxiswidth} height={vAxisHeight} x={vX} y={vY} data={data} min={min} max={max} theme={mergedTheme} yDataType={yDataType} yScaler={yScaler} />
+                </svg>
+            </PlotContext.Provider>
         </div>
     );
 };

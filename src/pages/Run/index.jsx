@@ -92,7 +92,7 @@ const RunDetailsPage = () => {
                                             theme: {
                                                 color: "#f3cb4f"
                                             },
-                                            label: "RA30"
+                                            label: "30 day"
                                         },
                                         {
                                             chartComponent: LineChart,
@@ -102,14 +102,14 @@ const RunDetailsPage = () => {
                                             theme: {
                                                 color: "#e92088"
                                             },
-                                            label: "RA7"
+                                            label: "7 day"
                                         }
                                     ]}
                                 />
 
                                 <h3>Needed per day</h3>
                                 <Graph
-                                    chartComponent={BarChart}
+                                    chartComponent={LineChart}
                                     theme={{
                                         color: "#3c3c3c"
                                     }}
@@ -122,6 +122,7 @@ const RunDetailsPage = () => {
                                 />
                                 <h3>Left to complete</h3>
                                 <Graph
+                                    chartComponent={LineChart}
                                     theme={{
                                         color: "#b3b3b3"
                                     }}
