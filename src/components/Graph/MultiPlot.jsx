@@ -9,9 +9,11 @@ import useWindowSize from "../../hooks/useWindowSize";
 import XAxis from "./Axis/XAxis";
 import YAxis from "./Axis/YAxis";
 import Legend from "./Legend";
+import { useXSpec, useYSpec, useDimensions } from "./hooks";
+
+import { PlotContext } from "./context";
 
 import { dataPropType } from "./PropTypes";
-import { useDimensions } from "./hooks";
 import { maxValue, minValue, parseData, scaleData } from "./utils";
 
 const baseTheme = {
@@ -19,27 +21,21 @@ const baseTheme = {
     colSpacing: 0.5
 };
 
-export const PlotContext = createContext({});
-
 // eslint-disable-next-line react/prop-types
-const MultiPlot = ({ data, height, min, max, xDataType, yDataType, theme }) => {
+const MultiPlot = ({ data, height, min, max, xDataType, yDataType, theme, yUnitScale, xUnitScale }) => {
     const graphRef = useRef(null);
     const { width: winWidth } = useWindowSize();
     const [elWidth, setElWidth] = useState(100);
 
-    const { plotWidth, plotHeight, plotX, plotY, xAxisWidth, xAxisHeight, hX, hY, vAxiswidth, vAxisHeight, vX, vY } = useDimensions({ height, elWidth });
+    const { plotWidth, plotHeight, plotX, plotY, hX, hY, vX, vY } = useDimensions({ height, elWidth });
 
     const combinedData = [];
     data.forEach((chart) => {
         combinedData.push(...chart.data);
     });
 
-    const yScaler = scaleData(yDataType)()
-        .domain([minValue(combinedData, "y", min), maxValue(combinedData, "y", max)])
-        .range([vAxisHeight, 0]); // flip axis
-
-    const xDomain = d3.extent(combinedData, (d) => parseData(d.x, xDataType));
-    const xScaler = scaleData(xDataType)().domain(xDomain).range([0, plotWidth]);
+    const [xDomain, xScaler] = useXSpec(combinedData, xDataType, plotWidth, xUnitScale);
+    const [yDomain, yScaler] = useYSpec(combinedData, yDataType, plotHeight, min, max, yUnitScale);
 
     useEffect(() => {
         if (graphRef.current) {
@@ -47,11 +43,26 @@ const MultiPlot = ({ data, height, min, max, xDataType, yDataType, theme }) => {
         }
     }, [winWidth, data]);
 
-    const mergedTheme = merge({}, baseTheme, theme);
+    // const mergedTheme = merge({}, baseTheme, theme);
+
+    const graphState = {
+        yAxis: {
+            scale: yScaler,
+            domain: yDomain,
+            dataType: yDataType,
+            unitScale: yUnitScale
+        },
+        xAxis: {
+            scale: xScaler,
+            domain: xDomain,
+            dataType: xDataType,
+            unitScale: xUnitScale
+        }
+    };
 
     return (
         <div ref={graphRef} style={{ width: "100%" }}>
-            <PlotContext.Provider value={{ a: 1 }}>
+            <PlotContext.Provider value={graphState}>
                 <svg width={elWidth} height={200}>
                     <Legend data={data.map((item) => [item.label, item.theme.color])} />
                     {data.map((item) => {
@@ -77,8 +88,8 @@ const MultiPlot = ({ data, height, min, max, xDataType, yDataType, theme }) => {
                         );
                     })}
                     {/* todo: remove data props */}
-                    <XAxis width={xAxisWidth} height={xAxisHeight} x={hX} y={hY} data={data} theme={mergedTheme} xDataType={xDataType} yScaler={yScaler} xScaler={xScaler} />
-                    <YAxis width={vAxiswidth} height={vAxisHeight} x={vX} y={vY} data={data} min={min} max={max} theme={mergedTheme} yDataType={yDataType} yScaler={yScaler} />
+                    <XAxis x={hX} y={hY} />
+                    <YAxis x={vX} y={vY} />
                 </svg>
             </PlotContext.Provider>
         </div>
@@ -103,7 +114,9 @@ MultiPlot.propTypes = {
     min: PropTypes.number,
     max: PropTypes.number,
     xDataType: PropTypes.string,
-    yDataType: PropTypes.string
+    yDataType: PropTypes.string,
+    yUnitScale: PropTypes.number,
+    xUnitScale: PropTypes.number
 };
 
 MultiPlot.defaultProps = {
@@ -113,7 +126,9 @@ MultiPlot.defaultProps = {
     max: null,
     xDataType: "date",
     yDataType: "number",
-    theme: {}
+    theme: {},
+    yUnitScale: 1,
+    xUnitScale: 1
 };
 
 export default MultiPlot;

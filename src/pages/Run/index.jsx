@@ -69,6 +69,7 @@ const RunDetailsPage = () => {
                             <>
                                 <h3>Per day</h3>
                                 <Graph
+                                    yUnitScale={0.001}
                                     chartComponent={BarChart}
                                     data={days.map((day) => {
                                         return { y: day.total, x: day.date };
@@ -77,10 +78,11 @@ const RunDetailsPage = () => {
                                         color: "#35cb6c"
                                     }}
                                 />
-
+                                {/* Todo: Add montly totals / averages */}
                                 <h3>Rolling averages </h3>
 
                                 <MultiPlot
+                                    yUnitScale={0.001}
                                     xDataType="date"
                                     min={0}
                                     data={[
@@ -109,9 +111,10 @@ const RunDetailsPage = () => {
 
                                 <h3>Needed per day</h3>
                                 <Graph
+                                    yUnitScale={0.001}
                                     chartComponent={LineChart}
                                     theme={{
-                                        color: "#3c3c3c"
+                                        color: "#8f2020"
                                     }}
                                     data={days.map((day) => {
                                         return { y: day.requiredPerDay, x: day.date };
@@ -122,7 +125,8 @@ const RunDetailsPage = () => {
                                 />
                                 <h3>Left to complete</h3>
                                 <Graph
-                                    chartComponent={LineChart}
+                                    yUnitScale={0.001}
+                                    chartComponent={BarChart}
                                     theme={{
                                         color: "#b3b3b3"
                                     }}

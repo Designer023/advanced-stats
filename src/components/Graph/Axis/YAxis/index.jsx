@@ -1,57 +1,48 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useContext } from "react";
 import PropTypes from "prop-types";
 import * as d3 from "d3";
-import { dataPropType } from "../../PropTypes";
-import { minValue, maxValue, scaleData } from "../../utils";
+import { PlotContext } from "../../context";
 
-const drawAxis = (axisRef, data, height, x, y, min, max, yDataType, unitScale = 1, yScaler = null) => {
+const drawAxis = ({ axisRef, x, y, yScaler, dataType }) => {
     const axisEl = d3.select(axisRef.current);
 
-    const hScaleAxis = scaleData(yDataType)()
-        .domain([minValue(data, "y", min) * unitScale, maxValue(data, "y", max) * unitScale])
-        .range([height, 0]); // flip axis
+    // eslint-disable-next-line no-cond-assign,no-empty
+    if (dataType === "X") {
+    }
 
-    const yAxis = d3.axisLeft().scale(yScaler || hScaleAxis);
+    const scale = d3.axisLeft().scale(yScaler);
 
-    axisEl.attr("transform", `translate(${x}, ${y})`).call(yAxis);
+    axisEl.attr("transform", `translate(${x}, ${y})`).call(scale);
 };
 
-const YAxis = ({ data, width, height, x, y, min, max, yDataType, yScaler }) => {
+const YAxis = ({ x, y }) => {
     const axisRef = useRef(null);
 
+    const {
+        yAxis: { scale: yScaler, dataType, unitScale }
+    } = useContext(PlotContext);
+
     useEffect(() => {
-        if (data && axisRef.current) {
-            drawAxis(axisRef, data, height, x, y, min, max, yDataType, 0.001, yScaler);
+        if (yScaler && axisRef.current) {
+            drawAxis({ axisRef, x, y, dataType, unitScale, yScaler });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
-        if (data && axisRef.current) {
-            drawAxis(axisRef, data, height, x, y, min, max, yDataType, 0.001, yScaler);
+        if (yScaler && axisRef.current) {
+            drawAxis({ axisRef, x, y, dataType, unitScale, yScaler });
         }
-    }, [width, data, height, x, y, max, min, yDataType, yScaler]);
+    }, [x, y, dataType, yScaler, unitScale]);
 
     return <g ref={axisRef} />;
 };
 
 YAxis.propTypes = {
-    data: dataPropType.isRequired,
-    width: PropTypes.number.isRequired,
-    height: PropTypes.number.isRequired,
     x: PropTypes.number.isRequired,
-    y: PropTypes.number.isRequired,
-    min: PropTypes.number,
-    max: PropTypes.number,
-    yDataType: PropTypes.string,
-    yScaler: PropTypes.func
+    y: PropTypes.number.isRequired
 };
 
-YAxis.defaultProps = {
-    min: 0,
-    max: null,
-    yDataType: "number",
-    yScaler: null
-};
+YAxis.defaultProps = {};
 
 export default YAxis;

@@ -1,22 +1,12 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useContext } from "react";
 import PropTypes from "prop-types";
 import * as d3 from "d3";
 import { dataPropType } from "../../PropTypes";
+import { PlotContext } from "../../context";
+import { parseData } from "../../utils";
 
-// eslint-disable-next-line no-unused-vars
-import { minValue, maxValue, parseData, scaleData } from "../../utils";
-
-const plotChart = ({ chartRef, data, width, height, x, y, min, max, theme, xDataType, yDataType, xScaler, yScaler }) => {
+const plotChart = ({ chartRef, data, width, height, x, y, theme, xDataType, xScaler, yScaler, yUnitScale, xUnitScale }) => {
     const plotArea = d3.select(chartRef.current);
-
-    const yScalerType =
-        yScaler ||
-        scaleData(yDataType)()
-            .domain([minValue(data, "y", min), maxValue(data, "y", max)])
-            .range([height, 0]); // flip axis
-
-    const xDomain = xScaler ? null : d3.extent(data, (d) => parseData(d.x, xDataType));
-    const xScalerType = xScaler || scaleData(xDataType)().domain(xDomain).range([0, width]);
 
     plotArea.attr("width", width).attr("height", height).attr("transform", `translate(${x}, ${y})`);
     plotArea.selectAll("path").remove(); // Remove existing content!
@@ -31,13 +21,18 @@ const plotChart = ({ chartRef, data, width, height, x, y, min, max, theme, xData
             "d",
             d3
                 .line()
-                .x((d) => xScalerType(parseData(d.x, xDataType)))
-                .y((d) => yScalerType(d.y))
+                .x((d) => xScaler(parseData(d.x, xDataType)) * xUnitScale)
+                .y((d) => yScaler(d.y * yUnitScale))
         );
 };
 
-const LineChart = ({ data, width, height, x, y, min, max, theme, xDataType, yDataType, xScaler, yScaler }) => {
+const LineChart = ({ data, width, height, x, y, min, max, theme, xDataType, yDataType }) => {
     const chartRef = useRef(null);
+
+    const {
+        yAxis: { scale: yScaler, unitScale: yUnitScale },
+        xAxis: { scale: xScaler, unitScale: xUnitScale }
+    } = useContext(PlotContext);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const plotOptions = {
@@ -53,7 +48,9 @@ const LineChart = ({ data, width, height, x, y, min, max, theme, xDataType, yDat
         xDataType,
         yDataType,
         xScaler,
-        yScaler
+        yScaler,
+        yUnitScale,
+        xUnitScale
     };
 
     useEffect(() => {
@@ -84,18 +81,14 @@ LineChart.propTypes = {
     min: PropTypes.number,
     max: PropTypes.number,
     xDataType: PropTypes.string,
-    yDataType: PropTypes.string,
-    xScaler: PropTypes.func,
-    yScaler: PropTypes.func
+    yDataType: PropTypes.string
 };
 
 LineChart.defaultProps = {
     min: 0,
     max: null,
     xDataType: "number",
-    yDataType: "number",
-    xScaler: null,
-    yScaler: null
+    yDataType: "number"
 };
 
 export default LineChart;

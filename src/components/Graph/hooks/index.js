@@ -1,4 +1,7 @@
 // eslint-disable-next-line import/prefer-default-export
+import * as d3 from "d3";
+import { maxValue, minValue, parseData, scaleData } from "../utils";
+
 export const useDimensions = ({ height, elWidth }) => {
     const padding = 5;
     const vAxiswidth = 50;
@@ -28,4 +31,20 @@ export const useDimensions = ({ height, elWidth }) => {
         vX,
         vY
     };
+};
+
+export const useXSpec = (data, dataType, dimension) => {
+    const xDomain = d3.extent(data, (d) => parseData(d.x, dataType));
+    const xScaler = scaleData(dataType)().domain(xDomain).range([0, dimension]);
+
+    return [xDomain, xScaler];
+};
+
+export const useYSpec = (data, dataType, dimension, min, max, unitScale = 1, flip = true) => {
+    const yDomain = [minValue(data, "y", min) * unitScale, maxValue(data, "y", max) * unitScale];
+    const yScaler = scaleData(dataType)()
+        .domain(yDomain)
+        .range(flip ? [dimension, 0] : [0, dimension]); // flip axis
+
+    return [yDomain, yScaler];
 };
