@@ -7,7 +7,7 @@ import { dataPropType } from "../../PropTypes";
 import { scaleData, parseData } from "../../utils";
 import { PlotContext } from "../../context";
 
-const plotChart = ({ chartRef, data, width, height, x, y, theme, xDataType, yDataType, yScaler, yUnitScale, xUnitScale, yDomain }) => {
+const plotChart = ({ chartRef, data, width, height, x, y, theme, xDataType, yDataType, yScaler, yUnitScale, xUnitScale, xScaler, yDomain }) => {
     const yScale = scaleData(yDataType)().domain(yDomain).range([0, height]);
 
     const plotArea = d3.select(chartRef.current);
@@ -15,12 +15,17 @@ const plotChart = ({ chartRef, data, width, height, x, y, theme, xDataType, yDat
     plotArea.attr("width", width).attr("height", height).attr("transform", `translate(${x}, ${y})`);
     plotArea.selectAll("rect").remove(); // Remove existing content!
 
-    const colSpacing = width < data.length * (1 + theme.colSpacing) ? 0 : theme.colSpacing;
-    const columnWidth = width / data.length - colSpacing;
-    const colW = columnWidth < 0.5 ? 0.5 : columnWidth;
+    const count = data.length + 1;
+    // 366 * 2
+    // const colSpacing = 0; // width < data.length * 2 ? 1 : 0;
+    // const columnWidth = width / (data.length - colSpacing);
+    // const colW = columnWidth; // < 0.5 ? 0.5 : columnWidth;
+    const colSpacing = width < count * (1 + theme.colSpacing) ? 0 : theme.colSpacing;
+    const columnWidth = width / count - colSpacing;
+    const colW = xScaler(1) - 1 < 1 ? 1 : xScaler(1) - 1; // columnWidth < 0.5 ? 0.5 : columnWidth;
 
     const xDomain = d3.extent(data, (d) => parseData(d.x, xDataType));
-    const xScaler = scaleData(xDataType)().domain(xDomain).range([0, width]);
+    // const xScaler = scaleData(xDataType)().domain(xDomain).range([0, width]);
 
     plotArea
         .selectAll("rect")
@@ -28,7 +33,8 @@ const plotChart = ({ chartRef, data, width, height, x, y, theme, xDataType, yDat
         .enter()
         .append("rect")
         .attr("x", (d) => xScaler(parseData(d.x, xDataType)))
-        .attr("width", colW)
+        // .attr("x", (d, i) => i * colW)
+        .attr("width", colW) // xScaler(1)
         .attr("y", (d) => 0) // height - yScale(d.y * yUnitScale))
         .attr("height", (d) => height - yScaler(d.y * yUnitScale))
         .attr("transform", (d) => `translate(0, ${yScaler(d.y * yUnitScale)})`)

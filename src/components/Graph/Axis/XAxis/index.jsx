@@ -10,6 +10,10 @@ const drawAxis = ({ axisRef, x, y, xScaler, dataType }) => {
     // Add ticks for each month
     if (dataType === "date") {
         scale.ticks(d3.timeMonth, 1).tickFormat(d3.timeFormat("%b"));
+    } else {
+        const formatxAxis = d3.format(".0f");
+
+        scale.tickFormat(formatxAxis).ticks(5);
     }
 
     axisEl.attr("transform", `translate(${x}, ${y})`).call(scale);

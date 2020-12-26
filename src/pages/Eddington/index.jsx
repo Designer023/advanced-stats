@@ -3,6 +3,10 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import EddingtonTable from "../../components/EddingtonTable";
 import ScoreTable from "../../components/ScoreTable";
+// eslint-disable-next-line no-unused-vars
+import Graph from "../../components/Graph";
+// eslint-disable-next-line no-unused-vars
+import BarChart from "../../components/Graph/Charts/Bar";
 
 // eslint-disable-next-line react/prop-types
 const EddingtonYear = ({ year, type }) => {
@@ -14,6 +18,21 @@ const EddingtonYear = ({ year, type }) => {
             <h3 className="text-xl font-semibold mb-b mt-8 text-gray-800">
                 {year} : {score}
             </h3>
+            <div>
+                <Graph
+                    xDataType="number"
+                    chartComponent={BarChart}
+                    data={breakdown
+                        .filter((i) => i > 0)
+                        .map((value, i) => {
+                            return { y: value, x: i };
+                        })}
+                    theme={{
+                        color: "#35cb6c"
+                    }}
+                />
+            </div>
+
             <EddingtonTable data={breakdown} />
         </>
     );
@@ -50,7 +69,26 @@ const EddingtonActivity = ({ type }) => {
                         </button>
                     </nav>
 
-                    <div className="mt-4">{view === "data" ? <EddingtonTable data={data} /> : <p>Graph - coming soon!</p>}</div>
+                    <div className="mt-4">
+                        {view === "data" ? (
+                            <EddingtonTable data={data} />
+                        ) : (
+                            <div>
+                                <Graph
+                                    xDataType="number"
+                                    chartComponent={BarChart}
+                                    data={data
+                                        .filter((i) => i > 0)
+                                        .map((value, i) => {
+                                            return { y: value, x: i };
+                                        })}
+                                    theme={{
+                                        color: "#35cb6c"
+                                    }}
+                                />
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
             <div className="grid grid-cols-2 gap-4">

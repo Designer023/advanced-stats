@@ -33,7 +33,9 @@ const Graph = ({ data, height, theme, min, max, xDataType, yDataType, chartCompo
         }
     }, [winWidth, data]);
 
-    const [xDomain, xScaler] = useXSpec(data, xDataType, plotWidth, xUnitScale);
+    const isBar = true;
+
+    const [xDomain, xScaler] = useXSpec(data, xDataType, plotWidth, xUnitScale, isBar);
     const [yDomain, yScaler] = useYSpec(data, yDataType, plotHeight, min, max, yUnitScale);
 
     const graphState = {

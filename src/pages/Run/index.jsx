@@ -17,8 +17,8 @@ const DISPLAY = {
     TABLE: "TABLE"
 };
 
-const RunDetailsPage = () => {
-    const { years } = useSelector((state) => state.processedData.activities.run);
+const RunDetailsPage = ({ type = "run" }) => {
+    const { years } = useSelector((state) => state.processedData.activities[type]);
     const currentYear = moment().year();
     const [tab, setTab] = useState(currentYear);
     const [display, setDisplay] = useState(DISPLAY.GRAPH);
@@ -30,7 +30,7 @@ const RunDetailsPage = () => {
     if (!years) return null;
     return (
         <div>
-            <h1 className="text-5xl font-semibold mt-8 mb-8 text-gray-800">Run</h1>
+            <h1 className="text-5xl font-semibold mt-8 mb-8 text-gray-800">{type}</h1>
             <hr className="my-2" />
             <Button color="green" type="button" onClick={() => setDisplayDaysWithoutActivity(!displayDaysWithoutActivity)}>
                 {displayDaysWithoutActivity ? "Hide empty days" : "Show all days"}
@@ -120,7 +120,6 @@ const RunDetailsPage = () => {
                                         return { y: day.requiredPerDay, x: day.date };
                                     })}
                                     // max={12000}
-                                    min={5000}
                                     max={13000}
                                 />
                                 <h3>Left to complete</h3>

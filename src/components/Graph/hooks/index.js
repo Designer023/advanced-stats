@@ -33,8 +33,11 @@ export const useDimensions = ({ height, elWidth }) => {
     };
 };
 
-export const useXSpec = (data, dataType, dimension) => {
+export const useXSpec = (data, dataType, dimension, isBar = false) => {
     const xDomain = d3.extent(data, (d) => parseData(d.x, dataType));
+    if (isBar && dataType === "number") {
+        xDomain[1] += 1; // Extend bar dimensions by 1 to allow space for width of bar
+    }
     const xScaler = scaleData(dataType)().domain(xDomain).range([0, dimension]);
 
     return [xDomain, xScaler];
