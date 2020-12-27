@@ -169,7 +169,8 @@ const processActivities = (activities, activityTypes) => {
 };
 
 const processData = (activities) => {
-    const activityTypes = ["Run", "Ride"];
+    const activityTypes = ["Run", "Ride", "Hike", "Walk"];
+
     const eddingtonData = processEddington(activities, activityTypes);
     const activityData = processActivities(activities, activityTypes);
     return {

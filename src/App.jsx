@@ -7,7 +7,7 @@ import Loading from "./components/Loading";
 import RunDetailsPage from "./pages/Run";
 import AuthStatus from "./components/AuthStatus";
 import HomePage from "./pages/Home";
-import RideDetailsPage from "./pages/Ride";
+// import RideDetailsPage from "./pages/Ride";
 import EddingtionDetailsPage from "./pages/Eddington";
 // import Banner from "./components/Banner";
 
@@ -26,7 +26,10 @@ function App() {
                     <Route path="/" exact component={HomePage} />
 
                     <Route path="/run" exact component={RunDetailsPage} />
-                    <Route path="/ride" exact component={RideDetailsPage} />
+
+                    <Route path="/ride" exact render={() => <RunDetailsPage type="ride" />} />
+                    <Route path="/hike" exact render={() => <RunDetailsPage type="hike" />} />
+                    <Route path="/walk" exact render={() => <RunDetailsPage type="walk" />} />
 
                     <Route path="/eddington" exact component={EddingtionDetailsPage} />
                 </Switch>

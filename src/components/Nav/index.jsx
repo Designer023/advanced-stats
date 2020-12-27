@@ -34,6 +34,14 @@ const useNav = () => {
                         to: "/ride"
                     },
                     {
+                        title: "Hike",
+                        to: "/hike"
+                    },
+                    {
+                        title: "Walk",
+                        to: "/walk"
+                    },
+                    {
                         title: "NEdd",
                         to: "/eddington"
                     }
