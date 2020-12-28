@@ -1,6 +1,7 @@
+/* eslint-disable react/prop-types,no-unused-vars */
 import { useSelector } from "react-redux";
 import moment from "moment";
-import { Fragment, useState } from "react";
+import { Fragment, useState, useMemo } from "react";
 
 import { Table, TD, TH } from "../../components/Tables";
 import Button from "../../components/Button";
@@ -11,10 +12,340 @@ import BarChart from "../../components/Graph/Charts/Bar";
 import LineChart from "../../components/Graph/Charts/Line";
 import Graph from "../../components/Graph";
 import MultiPlot from "../../components/Graph/MultiPlot";
+import ScatterChart from "../../components/Graph/Charts/Scatter";
 
 const DISPLAY = {
     GRAPH: "GRAPH",
     TABLE: "TABLE"
+};
+
+// eslint-disable-next-line react/prop-types
+const GraphDetails = ({ days }) => {
+    const today = moment().endOf("day");
+
+    const dailyRuns = useMemo(() => {
+        return days.map((day) => {
+            return { y: day.total, x: day.date };
+        });
+    }, [days]);
+
+    const dailyElevation = useMemo(() => {
+        return days.map((day) => {
+            return { y: day.dayElevation, x: day.date };
+        });
+    }, [days]);
+
+    const cumulative = useMemo(() => {
+        return days.map((day) => {
+            return { y: day.yearCumulative, x: day.date };
+        });
+    }, [days]);
+
+    const cumulativeElevation = useMemo(() => {
+        return days.map((day) => {
+            return { y: day.yearElevationGain, x: day.date };
+        });
+    }, [days]);
+
+    const cumulativeTarget = useMemo(() => {
+        return days.map((day, i) => {
+            return { y: (i * 3000000) / 366, x: day.date };
+        });
+    }, [days]);
+
+    const rolling30 = useMemo(() => {
+        return days
+            .filter((d, i) => {
+                const date = moment(d.date);
+                return date.isSameOrBefore(today) && i >= 30;
+            })
+            .map((day) => {
+                return { y: day.ra30, x: day.date };
+            });
+    }, [days, today]);
+
+    const rolling7 = useMemo(() => {
+        return days
+            .filter((d, i) => {
+                const date = moment(d.date);
+                return date.isSameOrBefore(today) && i >= 7;
+            })
+            .map((day) => {
+                return { y: day.ra7, x: day.date };
+            });
+    }, [days, today]);
+
+    const requiredDaily = useMemo(() => {
+        return days.map((day) => {
+            return { y: day.requiredPerDay, x: day.date };
+        });
+    }, [days]);
+
+    const det = useMemo(() => {
+        return days
+            .filter((day) => day.activities.length)
+            .map((day) => {
+                return { x: day.activities[0].distance, y: day.activities[0].total_elevation_gain, z: day.activities[0].moving_time };
+            });
+    }, [days]);
+
+    const paceDistance = useMemo(() => {
+        return days
+            .filter((day) => day.activities.length)
+            .map((day) => {
+                return { x: day.activities[0].average_speed, y: day.activities[0].total_elevation_gain, z: day.activities[0].average_heartrate };
+            });
+    }, [days]);
+
+    const hr = useMemo(() => {
+        return days
+            .filter((day) => day.activities.length)
+            .map((day) => {
+                return { x: day.activities[0].average_heartrate, y: day.activities[0].average_speed };
+            });
+    }, [days]);
+
+    const elhr = useMemo(() => {
+        return days
+            .filter((day) => day.activities.length)
+            .map((day) => {
+                return { x: day.activities[0].average_heartrate, y: day.activities[0].total_elevation_gain };
+            });
+    }, [days]);
+
+    const chr = useMemo(() => {
+        return days
+            .filter((day) => day.activities.length)
+            .map((day) => {
+                return { x: day.activities[0].distance, y: day.activities[0].suffer_score };
+            });
+    }, [days]);
+
+    return (
+        <>
+            <Graph
+                xDataType="number"
+                yDataType="number"
+                chartComponent={ScatterChart}
+                data={chr}
+                theme={{
+                    color: "#35cb6c"
+                }}
+                yLabel="Distance"
+                xLabel="Suffer Score"
+                xLabelTransform={(d) => d / 1000}
+            />
+            <Graph
+                xDataType="number"
+                chartComponent={ScatterChart}
+                data={det}
+                theme={{
+                    color: "#35cb6c"
+                }}
+            />
+
+            <Graph
+                xDataType="number"
+                chartComponent={ScatterChart}
+                data={paceDistance}
+                theme={{
+                    color: "#35cb6c"
+                }}
+            />
+
+            <Graph
+                xDataType="number"
+                chartComponent={ScatterChart}
+                data={elhr}
+                theme={{
+                    color: "#35cb6c"
+                }}
+            />
+
+            <Graph
+                xDataType="number"
+                chartComponent={ScatterChart}
+                data={hr}
+                theme={{
+                    color: "#35cb6c"
+                }}
+            />
+
+            <MultiPlot
+                yDataType="number"
+                yUnitScale={0.001}
+                xDataType="date"
+                min={0}
+                max={50000}
+                yLabel="Distance"
+                xLabel="Date"
+                data={[
+                    {
+                        chartComponent: BarChart,
+                        data: dailyRuns,
+                        theme: {
+                            color: "#35cb6c"
+                        },
+                        label: "Activities"
+                    },
+                    {
+                        chartComponent: LineChart,
+                        data: rolling7,
+                        theme: {
+                            color: "#a4467a",
+                            opacity: "0.5"
+                        },
+                        label: "7 day"
+                    },
+                    {
+                        chartComponent: LineChart,
+                        data: rolling30,
+                        theme: {
+                            color: "#e3bbd1",
+                            opacity: "0.5"
+                        },
+                        label: "30 day"
+                    },
+                    {
+                        chartComponent: LineChart,
+                        data: requiredDaily,
+                        theme: {
+                            color: "#ff8029"
+                        },
+                        label: "Required/day"
+                    }
+                ]}
+                height={400}
+            />
+
+            <h3>Per day</h3>
+            <Graph
+                yUnitScale={0.001}
+                chartComponent={BarChart}
+                data={dailyRuns}
+                theme={{
+                    color: "#35cb6c"
+                }}
+            />
+
+            <MultiPlot
+                yUnitScale={0.001}
+                xDataType="date"
+                min={0}
+                data={[
+                    {
+                        chartComponent: BarChart,
+                        data: dailyRuns,
+                        theme: {
+                            color: "#f3cb4f"
+                        },
+                        label: "Distance"
+                    },
+                    {
+                        chartComponent: BarChart,
+                        data: dailyElevation,
+                        theme: {
+                            color: "#e92088"
+                        },
+                        label: "Elevation"
+                    }
+                ]}
+            />
+
+            <MultiPlot
+                yDataType="number"
+                yUnitScale={0.001}
+                xDataType="date"
+                min={0}
+                // chartComponent={LineChart}
+                // data={cumulative}
+                // theme={{
+                //     color: "#62f549"
+                // }}
+                data={[
+                    {
+                        chartComponent: LineChart,
+                        data: cumulative,
+                        theme: {
+                            color: "#35cb6c"
+                        },
+                        label: "30 day"
+                    },
+                    {
+                        chartComponent: LineChart,
+                        data: cumulativeTarget,
+                        theme: {
+                            color: "#e3bbd1"
+                        },
+                        label: "7 day"
+                    }
+                ]}
+                height={400}
+            />
+            {/* Todo: Add montly totals / averages */}
+            <h3>Rolling averages </h3>
+
+            <MultiPlot
+                yUnitScale={0.001}
+                xDataType="date"
+                min={0}
+                data={[
+                    {
+                        chartComponent: LineChart,
+                        data: rolling30,
+                        theme: {
+                            color: "#f3cb4f"
+                        },
+                        label: "30 day"
+                    },
+                    {
+                        chartComponent: LineChart,
+                        data: rolling7,
+                        theme: {
+                            color: "#e92088"
+                        },
+                        label: "7 day"
+                    }
+                ]}
+            />
+
+            <h3>Cumulative Elevation</h3>
+            <Graph
+                // yUnitScale={0.001}
+                chartComponent={LineChart}
+                theme={{
+                    color: "#8f2020"
+                }}
+                data={cumulativeElevation}
+                // max={12000}
+                // max={13000}
+            />
+
+            <h3>Needed per day</h3>
+            <Graph
+                yUnitScale={0.001}
+                chartComponent={LineChart}
+                theme={{
+                    color: "#8f2020"
+                }}
+                data={requiredDaily}
+                // max={12000}
+                max={13000}
+            />
+
+            <h3>Left to complete</h3>
+            <Graph
+                yUnitScale={0.001}
+                chartComponent={BarChart}
+                theme={{
+                    color: "#b3b3b3"
+                }}
+                data={days.map((day) => {
+                    return { y: day.remainingYearTarget, x: day.date };
+                })}
+            />
+        </>
+    );
 };
 
 const RunDetailsPage = ({ type = "run" }) => {
@@ -66,74 +397,7 @@ const RunDetailsPage = ({ type = "run" }) => {
                         <hr className="my-2" />
 
                         {display === DISPLAY.GRAPH ? (
-                            <>
-                                <h3>Per day</h3>
-                                <Graph
-                                    yUnitScale={0.001}
-                                    chartComponent={BarChart}
-                                    data={days.map((day) => {
-                                        return { y: day.total, x: day.date };
-                                    })}
-                                    theme={{
-                                        color: "#35cb6c"
-                                    }}
-                                />
-                                {/* Todo: Add montly totals / averages */}
-                                <h3>Rolling averages </h3>
-
-                                <MultiPlot
-                                    yUnitScale={0.001}
-                                    xDataType="date"
-                                    min={0}
-                                    data={[
-                                        {
-                                            chartComponent: LineChart,
-                                            data: days.map((day) => {
-                                                return { y: day.ra30, x: day.date };
-                                            }),
-                                            theme: {
-                                                color: "#f3cb4f"
-                                            },
-                                            label: "30 day"
-                                        },
-                                        {
-                                            chartComponent: LineChart,
-                                            data: days.map((day) => {
-                                                return { y: day.ra7, x: day.date };
-                                            }),
-                                            theme: {
-                                                color: "#e92088"
-                                            },
-                                            label: "7 day"
-                                        }
-                                    ]}
-                                />
-
-                                <h3>Needed per day</h3>
-                                <Graph
-                                    yUnitScale={0.001}
-                                    chartComponent={LineChart}
-                                    theme={{
-                                        color: "#8f2020"
-                                    }}
-                                    data={days.map((day) => {
-                                        return { y: day.requiredPerDay, x: day.date };
-                                    })}
-                                    // max={12000}
-                                    max={13000}
-                                />
-                                <h3>Left to complete</h3>
-                                <Graph
-                                    yUnitScale={0.001}
-                                    chartComponent={BarChart}
-                                    theme={{
-                                        color: "#b3b3b3"
-                                    }}
-                                    data={days.map((day) => {
-                                        return { y: day.remainingYearTarget, x: day.date };
-                                    })}
-                                />
-                            </>
+                            <GraphDetails days={days} />
                         ) : (
                             <>
                                 <Table>

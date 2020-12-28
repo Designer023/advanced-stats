@@ -97,7 +97,10 @@ const processActivities = (activities, activityTypes) => {
                             totalCumulative: null,
                             remainingYearTarget: null,
                             requiredPerDay: null,
-                            targetValue: 3000 * 1000 // Todo: get from state/settings
+                            targetValue: 3000 * 1000, // Todo: get from state/settings
+                            dayClimb: null,
+                            yearElevationGain: null,
+                            totalElevationGain: null
                         }))
                     ],
                     total: null
@@ -116,22 +119,27 @@ const processActivities = (activities, activityTypes) => {
             // Math the results
 
             let tc = 0;
+            let totalElevationGain = 0;
             const rollingAverage = [];
             const maxRA = 28;
 
             Object.keys(activityByYearsNew).forEach((yearNum) => {
                 const { days } = activityByYearsNew[yearNum];
                 let yc = 0;
+                let yearElevationGain = 0;
 
                 days.forEach((currentDay, i) => {
-                    // const currentDay = activityByYearsNew[yearNum].days[day - 1];
-                    // eslint-disable-next-line no-unused-vars
                     const target = currentDay.targetValue;
                     const remaining = target - yc; // before we add the day taregt so it's eq midnight
-                    const requiredPerDay = remaining / (days.length - i); // This is the amount needed today (and all days after at this level)
+                    const requiredPerDay = remaining > 0 ? remaining / (days.length - i) : null; // This is the amount needed today (and all days after at this level)
                     const dayC = currentDay.activities.length ? currentDay.activities.reduce((a, c) => a + c.distance, 0) : 0;
                     tc += dayC;
                     yc += dayC;
+
+                    // Elevation accumulation
+                    const dayClimb = currentDay.activities.length ? currentDay.activities.reduce((a, c) => a + c.total_elevation_gain, 0) : 0;
+                    yearElevationGain += dayClimb;
+                    totalElevationGain += dayClimb;
 
                     // rolling Average
                     rollingAverage.push(dayC);
@@ -143,25 +151,31 @@ const processActivities = (activities, activityTypes) => {
                     const ra30 = average(rollingAverage);
                     const ra7 = average(rollingAverage.slice(-7));
 
+                    const remainingYearTarget = remaining - dayC > 0 ? remaining - dayC : 0;
                     // Update day:
                     activityByYearsNew[yearNum].days[currentDay.day - 1] = {
                         ...currentDay,
                         total: dayC,
                         yearCumulative: yc,
                         totalCumulative: tc,
-                        remainingYearTarget: remaining - dayC, // Remove anything ran for today
+                        remainingYearTarget,
                         requiredPerDay,
                         ra30,
-                        ra7
+                        ra7,
+                        dayElevation: dayClimb,
+                        yearElevationGain,
+                        totalElevationGain
                     };
                 });
 
                 activityByYearsNew[yearNum].total = yc;
+                activityByYearsNew[yearNum].totalElevation = yearElevationGain;
             });
 
             data[type.toLowerCase()] = {
                 years: activityByYearsNew,
-                total: tc
+                total: tc,
+                totalElevationGain
             };
         });
 

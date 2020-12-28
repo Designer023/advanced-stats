@@ -18,7 +18,7 @@ const baseTheme = {
 };
 
 // eslint-disable-next-line react/prop-types
-const Graph = ({ data, height, theme, min, max, xDataType, yDataType, chartComponent: ChartComponent, yUnitScale, xUnitScale }) => {
+const Graph = ({ data, height, theme, min, max, xDataType, yDataType, chartComponent: ChartComponent, yUnitScale, xUnitScale, xLabel, yLabel }) => {
     const graphRef = useRef(null);
     const { width: winWidth } = useWindowSize();
     const [elWidth, setElWidth] = useState(100);
@@ -43,13 +43,19 @@ const Graph = ({ data, height, theme, min, max, xDataType, yDataType, chartCompo
             scale: yScaler,
             domain: yDomain,
             dataType: yDataType,
-            unitScale: yUnitScale
+            unitScale: yUnitScale,
+            length: plotWidth,
+            depth: plotHeight,
+            label: yLabel
         },
         xAxis: {
             scale: xScaler,
             domain: xDomain,
             dataType: xDataType,
-            unitScale: xUnitScale
+            unitScale: xUnitScale,
+            length: plotHeight,
+            depth: plotWidth,
+            label: xLabel
         }
     };
 
@@ -78,7 +84,9 @@ Graph.propTypes = {
     xDataType: PropTypes.string,
     yDataType: PropTypes.string,
     yUnitScale: PropTypes.number,
-    xUnitScale: PropTypes.number
+    xUnitScale: PropTypes.number,
+    xLabel: PropTypes.string,
+    yLabel: PropTypes.string
 };
 
 Graph.defaultProps = {
@@ -90,7 +98,9 @@ Graph.defaultProps = {
     xDataType: "date",
     yDataType: "number",
     yUnitScale: 1,
-    xUnitScale: 1
+    xUnitScale: 1,
+    xLabel: null,
+    yLabel: null
 };
 
 export default Graph;

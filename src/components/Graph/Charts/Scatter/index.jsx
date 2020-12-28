@@ -13,7 +13,7 @@ const plotChart = ({ chartRef, data, width, height, x, y, theme, xDataType, yDat
     const plotArea = d3.select(chartRef.current);
 
     plotArea.attr("width", width).attr("height", height).attr("transform", `translate(${x}, ${y})`);
-    plotArea.selectAll("rect").remove(); // Remove existing content!
+    plotArea.selectAll("circle").remove(); // Remove existing content!
 
     const count = data.length + 1;
     // 366 * 2
@@ -27,23 +27,38 @@ const plotChart = ({ chartRef, data, width, height, x, y, theme, xDataType, yDat
     const xDomain = d3.extent(data, (d) => parseData(d.x, xDataType));
     // const xScaler = scaleData(xDataType)().domain(xDomain).range([0, width]);
 
+    const zDomain = d3.extent(data, (d) => parseData(d.z ? d.z : 100, "number"));
+    const zScaler = scaleData("number")().domain(zDomain).range([0, 1]);
+
     plotArea
         .selectAll("rect")
         .data(data)
         .enter()
-        .append("rect")
-        .attr("x", (d) => xScaler(parseData(d.x, xDataType)))
-        // .attr("x", (d, i) => i * colW)
-        .attr("width", colW) // xScaler(1)
-        .attr("y", (d) => 0) // height - yScale(d.y * yUnitScale))
-        .attr("height", (d) => height - yScaler(d.y * yUnitScale))
-        .attr("transform", (d) => `translate(0, ${yScaler(d.y * yUnitScale)})`)
-        // eslint-disable-next-line react/prop-types
-        .attr("fill", theme.color)
-        .attr("opacity", theme.opacity ? theme.color : "1");
+        .append("circle")
+        // eslint-disable-next-line func-names
+        .attr("cx", function (d) {
+            return xScaler(d.x);
+        })
+        // eslint-disable-next-line func-names
+        .attr("cy", function (d) {
+            return yScaler(d.y);
+        })
+        .attr("r", 3)
+        .attr("opacity", (d) => zScaler(d.z ? d.z : 165))
+        .style("fill", theme.color);
+    // .append("rect")
+    // .attr("x", (d) => xScaler(parseData(d.x, xDataType)))
+    // // .attr("x", (d, i) => i * colW)
+    // .attr("width", colW) // xScaler(1)
+    // .attr("y", (d) => 0) // height - yScale(d.y * yUnitScale))
+    // .attr("height", (d) => height - yScaler(d.y * yUnitScale))
+    // .attr("transform", (d) => `translate(0, ${yScaler(d.y * yUnitScale)})`)
+    // // eslint-disable-next-line react/prop-types
+    // .attr("fill", theme.color)
+    // .attr("opacity", theme.opacity ? theme.color : "1");
 };
 
-const BarChart = ({ data, width, height, x, y, min, max, theme, xDataType }) => {
+const ScatterChart = ({ data, width, height, x, y, min, max, theme, xDataType }) => {
     const chartRef = useRef(null);
 
     const {
@@ -87,7 +102,7 @@ const BarChart = ({ data, width, height, x, y, min, max, theme, xDataType }) => 
     return <g ref={chartRef} />;
 };
 
-BarChart.propTypes = {
+ScatterChart.propTypes = {
     data: dataPropType.isRequired,
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
@@ -101,10 +116,10 @@ BarChart.propTypes = {
     xDataType: PropTypes.string
 };
 
-BarChart.defaultProps = {
+ScatterChart.defaultProps = {
     min: 0,
     max: null,
     xDataType: "number"
 };
 
-export default BarChart;
+export default ScatterChart;

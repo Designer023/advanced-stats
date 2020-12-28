@@ -1,9 +1,12 @@
 import PropTypes from "prop-types";
 
+const dataTypes = PropTypes.oneOfType([PropTypes.string, PropTypes.number]);
+
 // eslint-disable-next-line import/prefer-default-export
 export const dataPropType = PropTypes.arrayOf(
     PropTypes.shape({
-        y: PropTypes.number.isRequired,
-        x: PropTypes.string.isRequired
+        y: dataTypes,
+        x: dataTypes,
+        z: dataTypes
     })
 );

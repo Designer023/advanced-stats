@@ -17,6 +17,7 @@ const plotChart = ({ chartRef, data, width, height, x, y, theme, xDataType, xSca
         .attr("fill", "none")
         .attr("stroke", theme.color)
         .attr("stroke-width", 1.5)
+        .attr("opacity", theme.opacity ? theme.color : "1")
         .attr(
             "d",
             d3

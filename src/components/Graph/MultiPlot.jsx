@@ -22,7 +22,7 @@ const baseTheme = {
 };
 
 // eslint-disable-next-line react/prop-types
-const MultiPlot = ({ data, height, min, max, xDataType, yDataType, theme, yUnitScale, xUnitScale }) => {
+const MultiPlot = ({ data, height, min, max, xDataType, yDataType, theme, yUnitScale, xUnitScale, xLabel, yLabel }) => {
     const graphRef = useRef(null);
     const { width: winWidth } = useWindowSize();
     const [elWidth, setElWidth] = useState(100);
@@ -50,20 +50,26 @@ const MultiPlot = ({ data, height, min, max, xDataType, yDataType, theme, yUnitS
             scale: yScaler,
             domain: yDomain,
             dataType: yDataType,
-            unitScale: yUnitScale
+            unitScale: yUnitScale,
+            length: plotWidth,
+            depth: plotHeight,
+            label: yLabel
         },
         xAxis: {
             scale: xScaler,
             domain: xDomain,
             dataType: xDataType,
-            unitScale: xUnitScale
+            unitScale: xUnitScale,
+            length: plotHeight,
+            depth: plotWidth,
+            label: xLabel
         }
     };
 
     return (
         <div ref={graphRef} style={{ width: "100%" }}>
             <PlotContext.Provider value={graphState}>
-                <svg width={elWidth} height={200}>
+                <svg width={elWidth} height={height}>
                     <Legend data={data.map((item) => [item.label, item.theme.color])} />
                     {data.map((item) => {
                         const { chartComponent: ChartComponent, data: plotData, theme: plotTheme, label } = item;
@@ -87,7 +93,7 @@ const MultiPlot = ({ data, height, min, max, xDataType, yDataType, theme, yUnitS
                             />
                         );
                     })}
-                    {/* todo: remove data props */}
+
                     <XAxis x={hX} y={hY} />
                     <YAxis x={vX} y={vY} />
                 </svg>
@@ -116,7 +122,9 @@ MultiPlot.propTypes = {
     xDataType: PropTypes.string,
     yDataType: PropTypes.string,
     yUnitScale: PropTypes.number,
-    xUnitScale: PropTypes.number
+    xUnitScale: PropTypes.number,
+    xLabel: PropTypes.string,
+    yLabel: PropTypes.string
 };
 
 MultiPlot.defaultProps = {
@@ -128,7 +136,9 @@ MultiPlot.defaultProps = {
     yDataType: "number",
     theme: {},
     yUnitScale: 1,
-    xUnitScale: 1
+    xUnitScale: 1,
+    xLabel: null,
+    yLabel: null
 };
 
 export default MultiPlot;
