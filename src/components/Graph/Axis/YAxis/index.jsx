@@ -1,15 +1,20 @@
-import { useEffect, useRef, useContext } from "react";
+import { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import * as d3 from "d3";
-import { PlotContext } from "../../context";
 
 // eslint-disable-next-line no-unused-vars
-const drawAxis = ({ axisRef, x, y, yScaler, dataType, label, length, depth }) => {
+const drawAxis = ({ axisRef, x, y, yScaler, dataType, label, length, depth, alt }) => {
     const axisEl = d3.select(axisRef.current);
 
-    // TODO: HANDLE DATA TYPE FORMATTING
+    let scale;
 
-    const scale = d3.axisLeft().scale(yScaler);
+    if (!alt) {
+        scale = d3.axisLeft();
+    } else {
+        scale = d3.axisRight();
+    }
+
+    scale.scale(yScaler);
 
     axisEl.selectAll(".axis-label").remove();
 
@@ -28,34 +33,34 @@ const drawAxis = ({ axisRef, x, y, yScaler, dataType, label, length, depth }) =>
     }
 };
 
-const YAxis = ({ x, y }) => {
+// eslint-disable-next-line react/prop-types
+const YAxis = ({ x, y, yScaler, dataType, unitScale, label, length, depth, alt }) => {
     const axisRef = useRef(null);
-
-    const {
-        yAxis: { scale: yScaler, dataType, unitScale, label, length, depth }
-    } = useContext(PlotContext);
 
     useEffect(() => {
         if (yScaler && axisRef.current) {
-            drawAxis({ axisRef, x, y, dataType, unitScale, yScaler, label, length, depth });
+            drawAxis({ axisRef, x, y, dataType, unitScale, yScaler, label, length, depth, alt });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         if (yScaler && axisRef.current) {
-            drawAxis({ axisRef, x, y, dataType, unitScale, yScaler, label, length, depth });
+            drawAxis({ axisRef, x, y, dataType, unitScale, yScaler, label, length, depth, alt });
         }
-    }, [x, y, dataType, yScaler, unitScale, label, length, depth]);
+    }, [x, y, dataType, yScaler, unitScale, label, length, depth, alt]);
 
     return <g ref={axisRef} />;
 };
 
 YAxis.propTypes = {
     x: PropTypes.number.isRequired,
-    y: PropTypes.number.isRequired
+    y: PropTypes.number.isRequired,
+    alt: PropTypes.bool
 };
 
-YAxis.defaultProps = {};
+YAxis.defaultProps = {
+    alt: false
+};
 
 export default YAxis;

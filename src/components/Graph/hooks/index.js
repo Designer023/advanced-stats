@@ -8,8 +8,8 @@ export const useDimensions = ({ height, elWidth }) => {
     const vAxiswidth = 50;
     const xAxisHeight = 30;
     const vAxisHeight = height - padding * 2 - xAxisHeight;
-    const xAxisWidth = elWidth - padding * 2 - vAxiswidth;
-    const plotWidth = elWidth - padding * 2 - vAxiswidth;
+    const xAxisWidth = elWidth - padding * 2 - vAxiswidth * 2;
+    const plotWidth = elWidth - padding * 2 - vAxiswidth * 2;
     const plotHeight = height - padding * 2 - xAxisHeight;
     const plotX = padding + vAxiswidth;
     const plotY = padding;
@@ -17,6 +17,8 @@ export const useDimensions = ({ height, elWidth }) => {
     const vY = padding;
     const hX = padding + vAxiswidth;
     const hY = padding + plotHeight;
+
+    const y2x = elWidth - padding - vAxiswidth;
 
     return {
         plotWidth,
@@ -30,7 +32,8 @@ export const useDimensions = ({ height, elWidth }) => {
         vAxiswidth,
         vAxisHeight,
         vX,
-        vY
+        vY,
+        y2x
     };
 };
 

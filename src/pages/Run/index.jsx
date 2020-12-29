@@ -110,7 +110,7 @@ const GraphDetails = ({ days }) => {
         return days
             .filter((day) => day.activities.length)
             .map((day) => {
-                return { x: day.activities[0].average_heartrate, y: day.activities[0].total_elevation_gain };
+                return { x: day.activities[0].total_elevation_gain, y: day.activities[0].average_heartrate };
             });
     }, [days]);
 
@@ -261,7 +261,15 @@ const GraphDetails = ({ days }) => {
             <h3>Per day</h3>
 
             <Graph
-                yUnitScale={0.001}
+                axis={{
+                    y: {
+                        unitScale: 1
+                    },
+                    y2: {
+                        unitScale: 0.001
+                    }
+                }}
+                yUnitScale={0.00001}
                 yDataType={DATA_TYPES.NUMBER}
                 xDataType={DATA_TYPES.DATE}
                 min={0}
@@ -270,9 +278,10 @@ const GraphDetails = ({ days }) => {
                         chartComponent: BarChart,
                         data: dailyRuns,
                         theme: {
-                            color: "#f3cb4f"
+                            color: "#206ae9"
                         },
-                        label: "Distance"
+                        label: "Distance",
+                        y2Axis: true
                     },
                     {
                         chartComponent: BarChart,

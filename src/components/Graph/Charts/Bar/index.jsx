@@ -8,7 +8,7 @@ import { scaleData, parseData } from "../../utils";
 import { PlotContext } from "../../context";
 import * as DATA_TYPES from "../../constants/dataTypes";
 
-const plotChart = ({ chartRef, data, width, height, x, y, theme, xDataType, yDataType, yScaler, yUnitScale, xUnitScale, xScaler, yDomain }) => {
+const plotChart = ({ chartRef, data, width, height, x, y, theme, xDataType, yDataType, yScaler, yUnitScale, xUnitScale, xScaler, yDomain, index }) => {
     const yScale = scaleData(yDataType)().domain(yDomain).range([0, height]);
 
     const plotArea = d3.select(chartRef.current);
@@ -36,21 +36,22 @@ const plotChart = ({ chartRef, data, width, height, x, y, theme, xDataType, yDat
         .attr("x", (d) => xScaler(parseData(d.x, xDataType)))
         // .attr("x", (d, i) => i * colW)
         .attr("width", colW) // xScaler(1)
-        .attr("y", (d) => 0) // height - yScale(d.y * yUnitScale))
+        .attr("y", 0) // height - yScale(d.y * yUnitScale))
         .attr("height", (d) => height - yScaler(d.y * yUnitScale))
-        .attr("transform", (d) => `translate(0, ${yScaler(d.y * yUnitScale)})`)
+        .attr("transform", (d) => `translate(${index}, ${yScaler(d.y * yUnitScale)})`)
         // eslint-disable-next-line react/prop-types
         .attr("fill", theme.color)
         .attr("opacity", theme.opacity ? theme.color : "1");
 };
 
-const BarChart = ({ data, width, height, x, y, min, max, theme, xDataType }) => {
+// eslint-disable-next-line react/prop-types
+const BarChart = ({ data, width, height, x, y, min, max, theme, xDataType, yScaler, yUnitScale, yDomain, yDataType, xScaler, xUnitScale, index }) => {
     const chartRef = useRef(null);
 
-    const {
-        yAxis: { scale: yScaler, unitScale: yUnitScale, domain: yDomain, dataType: yDataType },
-        xAxis: { scale: xScaler, unitScale: xUnitScale }
-    } = useContext(PlotContext);
+    // const {
+    //     yAxis: { scale: yScaler, unitScale: yUnitScale, domain: yDomain, dataType: yDataType },
+    //     xAxis: { scale: xScaler, unitScale: xUnitScale }
+    // } = useContext(PlotContext);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const plotOptions = {
@@ -69,7 +70,8 @@ const BarChart = ({ data, width, height, x, y, min, max, theme, xDataType }) => 
         xScaler,
         yUnitScale,
         xUnitScale,
-        yDomain
+        yDomain,
+        index
     };
 
     useEffect(() => {
