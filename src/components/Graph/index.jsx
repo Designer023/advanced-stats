@@ -45,10 +45,8 @@ const Graph = ({ plotData, height, min, max, xDataType, yDataType, theme, yUnitS
         }
     });
 
-    console.log(axis);
     const yAxisUnitScale = get(axis, "y.unitScale", yUnitScale);
     const y2AxisUnitScale = get(axis, "y2.unitScale", yUnitScale);
-    console.log(yAxisUnitScale, y2AxisUnitScale);
 
     const [xDomain, xScaler] = useXSpec(combinedData, xDataType, plotWidth, xUnitScale);
     // const [yPlotDomain, yPlotScaler] = useYSpec(combinedDataAltAxis, yDataType, plotHeight, min, max, yUnitScale);
