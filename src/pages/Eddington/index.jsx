@@ -7,6 +7,7 @@ import ScoreTable from "../../components/ScoreTable";
 import Graph from "../../components/Graph";
 // eslint-disable-next-line no-unused-vars
 import BarChart from "../../components/Graph/Charts/Bar";
+import * as DATA_TYPES from "../../components/Graph/constants/dataTypes";
 
 // eslint-disable-next-line react/prop-types
 const EddingtonYear = ({ year, type }) => {
@@ -20,7 +21,7 @@ const EddingtonYear = ({ year, type }) => {
             </h3>
             <div>
                 <Graph
-                    xDataType="number"
+                    xDataType={DATA_TYPES.NUMBER}
                     chartComponent={BarChart}
                     data={breakdown
                         .filter((i) => i > 0)
@@ -75,7 +76,7 @@ const EddingtonActivity = ({ type }) => {
                         ) : (
                             <div>
                                 <Graph
-                                    xDataType="number"
+                                    xDataType={DATA_TYPES.NUMBER}
                                     chartComponent={BarChart}
                                     data={data
                                         .filter((i) => i > 0)

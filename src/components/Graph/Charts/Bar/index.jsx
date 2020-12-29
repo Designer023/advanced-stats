@@ -6,6 +6,7 @@ import { dataPropType } from "../../PropTypes";
 
 import { scaleData, parseData } from "../../utils";
 import { PlotContext } from "../../context";
+import * as DATA_TYPES from "../../constants/dataTypes";
 
 const plotChart = ({ chartRef, data, width, height, x, y, theme, xDataType, yDataType, yScaler, yUnitScale, xUnitScale, xScaler, yDomain }) => {
     const yScale = scaleData(yDataType)().domain(yDomain).range([0, height]);
@@ -104,7 +105,7 @@ BarChart.propTypes = {
 BarChart.defaultProps = {
     min: 0,
     max: null,
-    xDataType: "number"
+    xDataType: DATA_TYPES.NUMBER
 };
 
 export default BarChart;

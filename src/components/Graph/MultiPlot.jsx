@@ -1,11 +1,9 @@
 /* eslint-disable no-unused-vars */
-import { useEffect, useRef, useState, createContext } from "react";
+import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import merge from "lodash/merge";
-import * as d3 from "d3";
 import useWindowSize from "../../hooks/useWindowSize";
 
-// import BarChart from "./Charts/Bar";
 import XAxis from "./Axis/XAxis";
 import YAxis from "./Axis/YAxis";
 import Legend from "./Legend";
@@ -14,7 +12,7 @@ import { useXSpec, useYSpec, useDimensions } from "./hooks";
 import { PlotContext } from "./context";
 
 import { dataPropType } from "./PropTypes";
-import { maxValue, minValue, parseData, scaleData } from "./utils";
+import * as DATA_TYPES from "./constants/dataTypes";
 
 const baseTheme = {
     color: "#ccc",
@@ -22,7 +20,7 @@ const baseTheme = {
 };
 
 // eslint-disable-next-line react/prop-types
-const MultiPlot = ({ data, height, min, max, xDataType, yDataType, theme, yUnitScale, xUnitScale, xLabel, yLabel }) => {
+const MultiPlot = ({ plotData, height, min, max, xDataType, yDataType, theme, yUnitScale, xUnitScale, xLabel, yLabel }) => {
     const graphRef = useRef(null);
     const { width: winWidth } = useWindowSize();
     const [elWidth, setElWidth] = useState(100);
@@ -30,7 +28,7 @@ const MultiPlot = ({ data, height, min, max, xDataType, yDataType, theme, yUnitS
     const { plotWidth, plotHeight, plotX, plotY, hX, hY, vX, vY } = useDimensions({ height, elWidth });
 
     const combinedData = [];
-    data.forEach((chart) => {
+    plotData.forEach((chart) => {
         combinedData.push(...chart.data);
     });
 
@@ -41,9 +39,7 @@ const MultiPlot = ({ data, height, min, max, xDataType, yDataType, theme, yUnitS
         if (graphRef.current) {
             setElWidth(graphRef.current.offsetWidth);
         }
-    }, [winWidth, data]);
-
-    // const mergedTheme = merge({}, baseTheme, theme);
+    }, [winWidth, plotData]);
 
     const graphState = {
         yAxis: {
@@ -70,27 +66,13 @@ const MultiPlot = ({ data, height, min, max, xDataType, yDataType, theme, yUnitS
         <div ref={graphRef} style={{ width: "100%" }}>
             <PlotContext.Provider value={graphState}>
                 <svg width={elWidth} height={height}>
-                    <Legend data={data.map((item) => [item.label, item.theme.color])} />
-                    {data.map((item) => {
-                        const { chartComponent: ChartComponent, data: plotData, theme: plotTheme, label } = item;
+                    <Legend data={plotData.map((item) => [item.label, item.theme.color])} />
+                    {plotData.map((item) => {
+                        const { chartComponent: ChartComponent, data, theme: plotTheme, label } = item;
                         const mergedChartTheme = merge({}, baseTheme, plotTheme);
 
                         return (
-                            <ChartComponent
-                                key={label}
-                                theme={mergedChartTheme}
-                                data={plotData}
-                                width={plotWidth}
-                                height={plotHeight}
-                                x={plotX}
-                                y={plotY}
-                                min={min}
-                                max={max}
-                                xDataType={xDataType}
-                                yDataType={yDataType}
-                                yScaler={yScaler}
-                                xScaler={xScaler}
-                            />
+                            <ChartComponent key={label} theme={mergedChartTheme} data={data} width={plotWidth} height={plotHeight} x={plotX} y={plotY} min={min} max={max} xDataType={xDataType} yDataType={yDataType} yScaler={yScaler} xScaler={xScaler} />
                         );
                     })}
 
@@ -104,7 +86,7 @@ const MultiPlot = ({ data, height, min, max, xDataType, yDataType, theme, yUnitS
 
 MultiPlot.propTypes = {
     // chartComponent: PropTypes.elementType,
-    data: PropTypes.arrayOf(
+    plotData: PropTypes.arrayOf(
         PropTypes.shape({
             data: dataPropType.isRequired,
             chartComponent: PropTypes.elementType.isRequired,
@@ -132,8 +114,8 @@ MultiPlot.defaultProps = {
     height: 200,
     min: 0,
     max: null,
-    xDataType: "date",
-    yDataType: "number",
+    xDataType: DATA_TYPES.DATE,
+    yDataType: DATA_TYPES.NUMBER,
     theme: {},
     yUnitScale: 1,
     xUnitScale: 1,

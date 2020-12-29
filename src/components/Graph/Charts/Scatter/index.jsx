@@ -6,6 +6,7 @@ import { dataPropType } from "../../PropTypes";
 
 import { scaleData, parseData } from "../../utils";
 import { PlotContext } from "../../context";
+import * as DATA_TYPES from "../../constants/dataTypes";
 
 const plotChart = ({ chartRef, data, width, height, x, y, theme, xDataType, yDataType, yScaler, yUnitScale, xUnitScale, xScaler, yDomain }) => {
     const yScale = scaleData(yDataType)().domain(yDomain).range([0, height]);
@@ -15,20 +16,8 @@ const plotChart = ({ chartRef, data, width, height, x, y, theme, xDataType, yDat
     plotArea.attr("width", width).attr("height", height).attr("transform", `translate(${x}, ${y})`);
     plotArea.selectAll("circle").remove(); // Remove existing content!
 
-    const count = data.length + 1;
-    // 366 * 2
-    // const colSpacing = 0; // width < data.length * 2 ? 1 : 0;
-    // const columnWidth = width / (data.length - colSpacing);
-    // const colW = columnWidth; // < 0.5 ? 0.5 : columnWidth;
-    const colSpacing = width < count * (1 + theme.colSpacing) ? 0 : theme.colSpacing;
-    const columnWidth = width / count - colSpacing;
-    const colW = xScaler(1) - 1 < 1 ? 1 : xScaler(1) - 1; // columnWidth < 0.5 ? 0.5 : columnWidth;
-
-    const xDomain = d3.extent(data, (d) => parseData(d.x, xDataType));
-    // const xScaler = scaleData(xDataType)().domain(xDomain).range([0, width]);
-
-    const zDomain = d3.extent(data, (d) => parseData(d.z ? d.z : 100, "number"));
-    const zScaler = scaleData("number")().domain(zDomain).range([0, 1]);
+    const zDomain = d3.extent(data, (d) => parseData(d.z ? d.z : 100, DATA_TYPES.NUMBER));
+    const zScaler = scaleData(DATA_TYPES.NUMBER)().domain(zDomain).range([0, 1]);
 
     plotArea
         .selectAll("rect")
@@ -46,16 +35,6 @@ const plotChart = ({ chartRef, data, width, height, x, y, theme, xDataType, yDat
         .attr("r", 3)
         .attr("opacity", (d) => zScaler(d.z ? d.z : 165))
         .style("fill", theme.color);
-    // .append("rect")
-    // .attr("x", (d) => xScaler(parseData(d.x, xDataType)))
-    // // .attr("x", (d, i) => i * colW)
-    // .attr("width", colW) // xScaler(1)
-    // .attr("y", (d) => 0) // height - yScale(d.y * yUnitScale))
-    // .attr("height", (d) => height - yScaler(d.y * yUnitScale))
-    // .attr("transform", (d) => `translate(0, ${yScaler(d.y * yUnitScale)})`)
-    // // eslint-disable-next-line react/prop-types
-    // .attr("fill", theme.color)
-    // .attr("opacity", theme.opacity ? theme.color : "1");
 };
 
 const ScatterChart = ({ data, width, height, x, y, min, max, theme, xDataType }) => {
@@ -119,7 +98,7 @@ ScatterChart.propTypes = {
 ScatterChart.defaultProps = {
     min: 0,
     max: null,
-    xDataType: "number"
+    xDataType: DATA_TYPES.NUMBER
 };
 
 export default ScatterChart;

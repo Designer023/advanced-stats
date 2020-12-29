@@ -3,12 +3,11 @@ import PropTypes from "prop-types";
 import * as d3 from "d3";
 import { PlotContext } from "../../context";
 
+// eslint-disable-next-line no-unused-vars
 const drawAxis = ({ axisRef, x, y, yScaler, dataType, label, length, depth }) => {
     const axisEl = d3.select(axisRef.current);
 
-    // eslint-disable-next-line no-cond-assign,no-empty
-    if (dataType === "X") {
-    }
+    // TODO: HANDLE DATA TYPE FORMATTING
 
     const scale = d3.axisLeft().scale(yScaler);
 
@@ -20,7 +19,6 @@ const drawAxis = ({ axisRef, x, y, yScaler, dataType, label, length, depth }) =>
         axisEl
             .append("text")
             .attr("class", "axis-label")
-            // .attr("transform", "rotate(-90)")
             .attr("y", depth + 20)
             .attr("x", length / 2)
             .attr("dy", "1em")

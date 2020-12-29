@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/prefer-default-export
 import * as d3 from "d3";
 import { maxValue, minValue, parseData, scaleData } from "../utils";
+import * as DATA_TYPES from "../constants/dataTypes";
 
 export const useDimensions = ({ height, elWidth }) => {
     const padding = 5;
@@ -35,7 +36,7 @@ export const useDimensions = ({ height, elWidth }) => {
 
 export const useXSpec = (data, dataType, dimension, isBar = false) => {
     const xDomain = d3.extent(data, (d) => parseData(d.x, dataType));
-    if (isBar && dataType === "number") {
+    if (isBar && dataType === DATA_TYPES.NUMBER) {
         xDomain[1] += 1; // Extend bar dimensions by 1 to allow space for width of bar
     }
     const xScaler = scaleData(dataType)().domain(xDomain).range([0, dimension]);

@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import * as DATA_TYPES from "../constants/dataTypes";
 
 export const maxValue = (data, key, max = null) => max || Math.ceil(d3.max(data, (d) => d[key]));
 export const minValue = (data, key, min = 0) => {
@@ -12,9 +13,9 @@ export const minValue = (data, key, min = 0) => {
 
 export const parseData = (value, type) => {
     switch (type) {
-        case "date":
+        case DATA_TYPES.DATE:
             return d3.isoParse(value);
-        case "number":
+        case DATA_TYPES.NUMBER:
         default:
             // Number needs no special parsing
             return value;
@@ -23,11 +24,11 @@ export const parseData = (value, type) => {
 
 export const scaleData = (type) => {
     switch (type) {
-        case "date":
+        case DATA_TYPES.DATE:
             return d3.scaleTime;
-        case "log":
+        case DATA_TYPES.NUMBER_LOG:
             return d3.scaleSymlog;
-        case "number":
+        case DATA_TYPES.NUMBER:
         default:
             return d3.scaleLinear;
     }

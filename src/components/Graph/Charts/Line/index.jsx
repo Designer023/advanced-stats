@@ -4,6 +4,7 @@ import * as d3 from "d3";
 import { dataPropType } from "../../PropTypes";
 import { PlotContext } from "../../context";
 import { parseData } from "../../utils";
+import * as DATA_TYPES from "../../constants/dataTypes";
 
 const plotChart = ({ chartRef, data, width, height, x, y, theme, xDataType, xScaler, yScaler, yUnitScale, xUnitScale }) => {
     const plotArea = d3.select(chartRef.current);
@@ -22,6 +23,7 @@ const plotChart = ({ chartRef, data, width, height, x, y, theme, xDataType, xSca
             "d",
             d3
                 .line()
+                .curve(d3.curveCardinalOpen.tension(0.25))
                 .x((d) => xScaler(parseData(d.x, xDataType)) * xUnitScale)
                 .y((d) => yScaler(d.y * yUnitScale))
         );
@@ -88,8 +90,8 @@ LineChart.propTypes = {
 LineChart.defaultProps = {
     min: 0,
     max: null,
-    xDataType: "number",
-    yDataType: "number"
+    xDataType: DATA_TYPES.NUMBER,
+    yDataType: DATA_TYPES.NUMBER
 };
 
 export default LineChart;

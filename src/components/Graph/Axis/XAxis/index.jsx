@@ -2,17 +2,17 @@ import { useEffect, useRef, useContext } from "react";
 import PropTypes from "prop-types";
 import * as d3 from "d3";
 import { PlotContext } from "../../context";
+import * as DATA_TYPES from "../../constants/dataTypes";
 
 const drawAxis = ({ axisRef, x, y, xScaler, dataType, length, label }) => {
     const axisEl = d3.select(axisRef.current);
     const scale = d3.axisBottom().scale(xScaler);
 
     // Add ticks for each month
-    if (dataType === "date") {
+    if (dataType === DATA_TYPES.DATE) {
         scale.ticks(d3.timeMonth, 1).tickFormat(d3.timeFormat("%b"));
     } else {
         // const formatxAxis = d3.format(".0f");
-        //
         // scale.tickFormat(formatxAxis).ticks(5);
     }
 
