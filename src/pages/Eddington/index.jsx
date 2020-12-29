@@ -8,6 +8,7 @@ import Graph from "../../components/Graph";
 // eslint-disable-next-line no-unused-vars
 import BarChart from "../../components/Graph/Charts/Bar";
 import * as DATA_TYPES from "../../components/Graph/constants/dataTypes";
+import MultiPlot from "../../components/Graph/MultiPlot";
 
 // eslint-disable-next-line react/prop-types
 const EddingtonYear = ({ year, type }) => {
@@ -20,17 +21,25 @@ const EddingtonYear = ({ year, type }) => {
                 {year} : {score}
             </h3>
             <div>
-                <Graph
+                <MultiPlot
                     xDataType={DATA_TYPES.NUMBER}
-                    chartComponent={BarChart}
-                    data={breakdown
-                        .filter((i) => i > 0)
-                        .map((value, i) => {
-                            return { y: value, x: i };
-                        })}
-                    theme={{
-                        color: "#35cb6c"
-                    }}
+                    yDataType={DATA_TYPES.NUMBER}
+                    plotData={[
+                        {
+                            chartComponent: BarChart,
+                            data: breakdown
+                                .filter((i) => i > 0)
+                                .map((value, i) => {
+                                    return { y: value, x: i };
+                                }),
+                            theme: {
+                                color: "#35cb6c"
+                            },
+                            label: "Eddington values"
+                        }
+                    ]}
+                    yLabel="Count"
+                    xLabel="Number"
                 />
             </div>
 
@@ -75,17 +84,25 @@ const EddingtonActivity = ({ type }) => {
                             <EddingtonTable data={data} />
                         ) : (
                             <div>
-                                <Graph
+                                <MultiPlot
                                     xDataType={DATA_TYPES.NUMBER}
-                                    chartComponent={BarChart}
-                                    data={data
-                                        .filter((i) => i > 0)
-                                        .map((value, i) => {
-                                            return { y: value, x: i };
-                                        })}
-                                    theme={{
-                                        color: "#35cb6c"
-                                    }}
+                                    yDataType={DATA_TYPES.NUMBER}
+                                    plotData={[
+                                        {
+                                            chartComponent: BarChart,
+                                            data: data
+                                                .filter((i) => i > 0)
+                                                .map((value, i) => {
+                                                    return { y: value, x: i };
+                                                }),
+                                            theme: {
+                                                color: "#333b37"
+                                            },
+                                            label: "Eddington values"
+                                        }
+                                    ]}
+                                    yLabel="Count"
+                                    xLabel="Number"
                                 />
                             </div>
                         )}

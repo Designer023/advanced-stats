@@ -125,59 +125,89 @@ const GraphDetails = ({ days }) => {
 
     return (
         <>
-            <Graph
+            <MultiPlot
                 xDataType={DATA_TYPES.NUMBER}
                 yDataType={DATA_TYPES.NUMBER}
-                chartComponent={ScatterChart}
-                plotData={chr}
-                theme={{
-                    color: "#35cb6c"
-                }}
+                plotData={[
+                    {
+                        chartComponent: ScatterChart,
+                        data: chr,
+                        theme: {
+                            color: "#35cb6c"
+                        },
+                        label: "HR vs. Speed"
+                    }
+                ]}
                 yLabel="Distance"
                 xLabel="Suffer Score"
                 xLabelTransform={(d) => d / 1000}
             />
-            <Graph
+
+            <MultiPlot
                 xDataType={DATA_TYPES.NUMBER}
-                chartComponent={ScatterChart}
-                plotData={det}
-                theme={{
-                    color: "#25dafa"
-                }}
+                yDataType={DATA_TYPES.NUMBER}
+                plotData={[
+                    {
+                        chartComponent: ScatterChart,
+                        data: det,
+                        theme: {
+                            color: "#25dafa"
+                        },
+                        label: "Distance Elevation Time"
+                    }
+                ]}
                 yLabel="Distance"
                 xLabel="Elevation"
                 zLabel="Time"
             />
 
-            <Graph
+            <MultiPlot
                 xDataType={DATA_TYPES.NUMBER}
-                chartComponent={ScatterChart}
-                plotData={paceDistance}
-                theme={{
-                    color: "#ee368b"
-                }}
+                yDataType={DATA_TYPES.NUMBER}
+                plotData={[
+                    {
+                        chartComponent: ScatterChart,
+                        data: paceDistance,
+                        theme: {
+                            color: "#ee368b"
+                        },
+                        label: "HR vs. Speed"
+                    }
+                ]}
                 yLabel="Speed"
                 xLabel="Elevation"
             />
 
-            <Graph
+            <MultiPlot
                 xDataType={DATA_TYPES.NUMBER}
-                chartComponent={ScatterChart}
-                plotData={elhr}
-                theme={{
-                    color: "#f1b131"
-                }}
+                yDataType={DATA_TYPES.NUMBER}
+                plotData={[
+                    {
+                        chartComponent: ScatterChart,
+                        data: elhr,
+                        theme: {
+                            color: "#f1b131"
+                        },
+                        label: "HR vs. Elevation"
+                    }
+                ]}
                 yLabel="Heart Rate"
                 xLabel="Elevation"
             />
 
-            <Graph
+            <MultiPlot
                 xDataType={DATA_TYPES.NUMBER}
-                chartComponent={ScatterChart}
-                plotData={hr}
-                theme={{
-                    color: "#7940e7"
-                }}
+                yDataType={DATA_TYPES.NUMBER}
+                plotData={[
+                    {
+                        chartComponent: ScatterChart,
+                        data: hr,
+                        theme: {
+                            color: "#7940e7"
+                        },
+                        label: "HR vs. Speed"
+                    }
+                ]}
                 yLabel="Heart Rate"
                 xLabel="Speed"
             />
@@ -301,16 +331,21 @@ const GraphDetails = ({ days }) => {
             />
 
             <h3>Left to complete</h3>
-            <Graph
+            <MultiPlot
+                plotData={[
+                    {
+                        chartComponent: LineChart,
+                        data: days.map((day) => {
+                            return { y: day.remainingYearTarget, x: day.date };
+                        }),
+                        theme: {
+                            color: "#4e4d4d"
+                        },
+                        label: "Cumulative Elevation"
+                    }
+                ]}
                 yDataType={DATA_TYPES.NUMBER}
                 yUnitScale={0.001}
-                chartComponent={LineChart}
-                theme={{
-                    color: "#4e4d4d"
-                }}
-                plotData={days.map((day) => {
-                    return { y: day.remainingYearTarget, x: day.date };
-                })}
             />
         </>
     );
