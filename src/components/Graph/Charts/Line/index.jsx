@@ -23,7 +23,7 @@ const plotChart = ({ chartRef, data, width, height, x, y, theme, xDataType, xSca
             "d",
             d3
                 .line()
-                .curve(d3.curveCardinalOpen.tension(0.25))
+                .curve(d3.curveMonotoneX)
                 .x((d) => xScaler(parseData(d.x, xDataType)) * xUnitScale)
                 .y((d) => yScaler(d.y * yUnitScale))
         );
