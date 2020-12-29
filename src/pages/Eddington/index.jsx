@@ -8,7 +8,6 @@ import Graph from "../../components/Graph";
 // eslint-disable-next-line no-unused-vars
 import BarChart from "../../components/Graph/Charts/Bar";
 import * as DATA_TYPES from "../../components/Graph/constants/dataTypes";
-import MultiPlot from "../../components/Graph/MultiPlot";
 
 // eslint-disable-next-line react/prop-types
 const EddingtonYear = ({ year, type }) => {
@@ -21,7 +20,7 @@ const EddingtonYear = ({ year, type }) => {
                 {year} : {score}
             </h3>
             <div>
-                <MultiPlot
+                <Graph
                     xDataType={DATA_TYPES.NUMBER}
                     yDataType={DATA_TYPES.NUMBER}
                     plotData={[
@@ -84,7 +83,7 @@ const EddingtonActivity = ({ type }) => {
                             <EddingtonTable data={data} />
                         ) : (
                             <div>
-                                <MultiPlot
+                                <Graph
                                     xDataType={DATA_TYPES.NUMBER}
                                     yDataType={DATA_TYPES.NUMBER}
                                     plotData={[

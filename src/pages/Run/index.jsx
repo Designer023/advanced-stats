@@ -11,7 +11,6 @@ import { KM } from "../../components/Formatters";
 import BarChart from "../../components/Graph/Charts/Bar";
 import LineChart from "../../components/Graph/Charts/Line";
 import Graph from "../../components/Graph";
-import MultiPlot from "../../components/Graph/MultiPlot";
 import ScatterChart from "../../components/Graph/Charts/Scatter";
 
 import * as DATA_TYPES from "../../components/Graph/constants/dataTypes";
@@ -125,7 +124,7 @@ const GraphDetails = ({ days }) => {
 
     return (
         <>
-            <MultiPlot
+            <Graph
                 xDataType={DATA_TYPES.NUMBER}
                 yDataType={DATA_TYPES.NUMBER}
                 plotData={[
@@ -143,7 +142,7 @@ const GraphDetails = ({ days }) => {
                 xLabelTransform={(d) => d / 1000}
             />
 
-            <MultiPlot
+            <Graph
                 xDataType={DATA_TYPES.NUMBER}
                 yDataType={DATA_TYPES.NUMBER}
                 plotData={[
@@ -161,7 +160,7 @@ const GraphDetails = ({ days }) => {
                 zLabel="Time"
             />
 
-            <MultiPlot
+            <Graph
                 xDataType={DATA_TYPES.NUMBER}
                 yDataType={DATA_TYPES.NUMBER}
                 plotData={[
@@ -178,7 +177,7 @@ const GraphDetails = ({ days }) => {
                 xLabel="Elevation"
             />
 
-            <MultiPlot
+            <Graph
                 xDataType={DATA_TYPES.NUMBER}
                 yDataType={DATA_TYPES.NUMBER}
                 plotData={[
@@ -195,7 +194,7 @@ const GraphDetails = ({ days }) => {
                 xLabel="Elevation"
             />
 
-            <MultiPlot
+            <Graph
                 xDataType={DATA_TYPES.NUMBER}
                 yDataType={DATA_TYPES.NUMBER}
                 plotData={[
@@ -212,7 +211,7 @@ const GraphDetails = ({ days }) => {
                 xLabel="Speed"
             />
 
-            <MultiPlot
+            <Graph
                 yDataType={DATA_TYPES.NUMBER}
                 yUnitScale={0.001}
                 xDataType={DATA_TYPES.DATE}
@@ -261,7 +260,7 @@ const GraphDetails = ({ days }) => {
 
             <h3>Per day</h3>
 
-            <MultiPlot
+            <Graph
                 yUnitScale={0.001}
                 yDataType={DATA_TYPES.NUMBER}
                 xDataType={DATA_TYPES.DATE}
@@ -286,7 +285,7 @@ const GraphDetails = ({ days }) => {
                 ]}
             />
 
-            <MultiPlot
+            <Graph
                 yDataType={DATA_TYPES.NUMBER}
                 xDataType={DATA_TYPES.DATE}
                 yUnitScale={0.001}
@@ -314,7 +313,7 @@ const GraphDetails = ({ days }) => {
             {/* Todo: Add montly totals / averages */}
 
             <h3>Cumulative Elevation</h3>
-            <MultiPlot
+            <Graph
                 theme={{
                     color: "#8f2020"
                 }}
@@ -331,7 +330,7 @@ const GraphDetails = ({ days }) => {
             />
 
             <h3>Left to complete</h3>
-            <MultiPlot
+            <Graph
                 plotData={[
                     {
                         chartComponent: LineChart,
