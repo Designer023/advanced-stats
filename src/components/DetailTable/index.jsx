@@ -16,6 +16,7 @@ const DetailTable = ({ days }) => {
             </Button>
 
             <hr className="my-2" />
+
             <Table>
                 <thead>
                     <tr>
