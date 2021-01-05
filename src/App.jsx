@@ -4,12 +4,10 @@ import { useSelector } from "react-redux";
 import Nav from "./components/Nav";
 import Token from "./components/Token";
 import Loading from "./components/Loading";
-import RunDetailsPage from "./pages/Run";
+import ActivityDetails from "./pages/ActivityDetails";
 import AuthStatus from "./components/AuthStatus";
 import HomePage from "./pages/Home";
-// import RideDetailsPage from "./pages/Ride";
 import EddingtionDetailsPage from "./pages/Eddington";
-// import Banner from "./components/Banner";
 
 function App() {
     const { isLoading } = useSelector((state) => state.app);
@@ -25,11 +23,10 @@ function App() {
 
                     <Route path="/" exact component={HomePage} />
 
-                    <Route path="/run" exact component={RunDetailsPage} />
-
-                    <Route path="/ride" exact render={() => <RunDetailsPage type="ride" />} />
-                    <Route path="/hike" exact render={() => <RunDetailsPage type="hike" />} />
-                    <Route path="/walk" exact render={() => <RunDetailsPage type="walk" />} />
+                    <Route path="/run" exact component={ActivityDetails} type="run" />
+                    <Route path="/ride" exact render={() => <ActivityDetails type="ride" />} />
+                    <Route path="/hike" exact render={() => <ActivityDetails type="hike" />} />
+                    <Route path="/walk" exact render={() => <ActivityDetails type="walk" />} />
 
                     <Route path="/eddington" exact component={EddingtionDetailsPage} />
                 </Switch>

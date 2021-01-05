@@ -8,6 +8,8 @@ import Button from "../../components/Button";
 
 import { KM } from "../../components/Formatters";
 
+import DetailTable from "../../components/DetailTable";
+
 import BarChart from "../../components/Graph/Charts/Bar";
 import LineChart from "../../components/Graph/Charts/Line";
 import Graph from "../../components/Graph";
@@ -110,7 +112,7 @@ const GraphDetails = ({ days }) => {
         return days
             .filter((day) => day.activities.length)
             .map((day) => {
-                return { x: day.activities[0].total_elevation_gain, y: day.activities[0].average_heartrate };
+                return { x: day.activities[0].average_heartrate, y: day.activities[0].total_elevation_gain };
             });
     }, [days]);
 
@@ -134,7 +136,7 @@ const GraphDetails = ({ days }) => {
                         theme: {
                             color: "#35cb6c"
                         },
-                        label: "HR vs. Speed"
+                        label: "Distance vs. Suffer score"
                     }
                 ]}
                 yLabel="Distance"
@@ -170,16 +172,20 @@ const GraphDetails = ({ days }) => {
                         theme: {
                             color: "#ee368b"
                         },
-                        label: "HR vs. Speed"
+                        label: "Speed vs. Gain vs HR"
                     }
                 ]}
                 yLabel="Speed"
-                xLabel="Elevation"
+                xLabel="Elevation gain"
             />
 
             <Graph
                 xDataType={DATA_TYPES.NUMBER}
                 yDataType={DATA_TYPES.NUMBER}
+                pad={{
+                    x: 1,
+                    y: 50
+                }}
                 plotData={[
                     {
                         chartComponent: ScatterChart,
@@ -197,6 +203,10 @@ const GraphDetails = ({ days }) => {
             <Graph
                 xDataType={DATA_TYPES.NUMBER}
                 yDataType={DATA_TYPES.NUMBER}
+                pad={{
+                    x: 1,
+                    y: 1
+                }}
                 plotData={[
                     {
                         chartComponent: ScatterChart,
@@ -306,7 +316,7 @@ const GraphDetails = ({ days }) => {
                         theme: {
                             color: "#35cb6c"
                         },
-                        label: "30 day"
+                        label: "Progress"
                     },
                     {
                         chartComponent: LineChart,
@@ -314,7 +324,7 @@ const GraphDetails = ({ days }) => {
                         theme: {
                             color: "#e3bbd1"
                         },
-                        label: "7 day"
+                        label: "Target"
                     }
                 ]}
                 height={400}
@@ -359,26 +369,18 @@ const GraphDetails = ({ days }) => {
     );
 };
 
-const RunDetailsPage = ({ type = "run" }) => {
+const ActivityDetails = ({ type = "run" }) => {
     const { years } = useSelector((state) => state.processedData.activities[type]);
     const currentYear = moment().year();
     const [tab, setTab] = useState(currentYear);
     const [display, setDisplay] = useState(DISPLAY.GRAPH);
-
-    const [displayDaysWithoutActivity, setDisplayDaysWithoutActivity] = useState(false);
-
-    const today = moment().startOf("day");
 
     if (!years) return null;
     return (
         <div>
             <h1 className="text-5xl font-semibold mt-8 mb-8 text-gray-800">{type}</h1>
             <hr className="my-2" />
-            <Button color="green" type="button" onClick={() => setDisplayDaysWithoutActivity(!displayDaysWithoutActivity)}>
-                {displayDaysWithoutActivity ? "Hide empty days" : "Show all days"}
-            </Button>
 
-            <hr className="my-2" />
             <nav className="flex flex-col sm:flex-row">
                 {Object.values(years).map(({ year }) => (
                     <Fragment key={year}>
@@ -407,116 +409,11 @@ const RunDetailsPage = ({ type = "run" }) => {
 
                         <hr className="my-2" />
 
-                        {display === DISPLAY.GRAPH ? (
-                            <GraphDetails days={days} />
-                        ) : (
-                            <>
-                                <Table>
-                                    <thead>
-                                        <tr>
-                                            <TH>Date</TH>
-                                            <TH>DoY</TH>
-                                            <TH>Activities</TH>
-                                            <TH>Distance</TH>
-                                            <TH>Elevation</TH>
-
-                                            <TH>Day distance</TH>
-                                            <TH>Year cumulative Distance</TH>
-                                            <TH>Total cumulative Distance</TH>
-                                            <TH>Remaining</TH>
-                                            <TH>Needed per day</TH>
-                                            <TH muted>RA 30</TH>
-                                            <TH muted>RA 7</TH>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <>
-                                            {days.map((day) => {
-                                                if (!day.activities.length) {
-                                                    const date = moment(day.date);
-                                                    const isFuture = today.isBefore(date.clone().add(1, "day"));
-                                                    if (!displayDaysWithoutActivity && !isFuture) return null;
-                                                    return (
-                                                        <tr key={day.date}>
-                                                            <TD muted>{date.format("ddd, Do MMM")}</TD>
-                                                            <TD muted>{day.day}</TD>
-                                                            <TD muted>-</TD>
-                                                            <TD muted>-</TD>
-                                                            <TD muted>-</TD>
-                                                            <TD muted>-</TD>
-                                                            <TD muted>-</TD>
-                                                            <TD muted>-</TD>
-                                                            <TD muted>
-                                                                <KM meters={day.remainingYearTarget} />
-                                                            </TD>
-                                                            <TD muted>
-                                                                <KM meters={day.requiredPerDay} />
-                                                            </TD>
-                                                            <TD muted>
-                                                                <KM meters={day.ra30} />
-                                                            </TD>
-                                                            <TD muted>
-                                                                <KM meters={day.ra7} />
-                                                            </TD>
-                                                        </tr>
-                                                    );
-                                                }
-
-                                                return (
-                                                    <Fragment key={day.date}>
-                                                        {day.activities.map((activity, i) => (
-                                                            <tr key={activity.upload_id}>
-                                                                {i === 0 ? (
-                                                                    <>
-                                                                        <TD rowSpan={day.activities.length}>{moment(day.date).format("ddd, Do MMM")}</TD>
-                                                                        <TD rowSpan={day.activities.length}>{day.day}</TD>
-                                                                    </>
-                                                                ) : null}
-                                                                <TD>{activity.name}</TD>
-                                                                <TD>
-                                                                    <KM meters={activity.distance} />
-                                                                </TD>
-                                                                <TD>{activity.total_elevation_gain}</TD>
-                                                                {i === 0 ? (
-                                                                    <>
-                                                                        <TD rowSpan={day.activities.length}>
-                                                                            <KM meters={day.total} />
-                                                                        </TD>
-                                                                        <TD rowSpan={day.activities.length}>
-                                                                            <KM meters={day.yearCumulative} />
-                                                                        </TD>
-                                                                        <TD rowSpan={day.activities.length}>
-                                                                            <KM meters={day.totalCumulative} />
-                                                                        </TD>
-
-                                                                        <TD rowSpan={day.activities.length}>
-                                                                            <KM meters={day.remainingYearTarget} />
-                                                                        </TD>
-                                                                        <TD rowSpan={day.activities.length}>
-                                                                            <KM meters={day.requiredPerDay} />
-                                                                        </TD>
-                                                                        <TD rowSpan={day.activities.length}>
-                                                                            <KM meters={day.ra30} />
-                                                                        </TD>
-                                                                        <TD rowSpan={day.activities.length}>
-                                                                            <KM meters={day.ra7} />
-                                                                        </TD>
-                                                                    </>
-                                                                ) : null}
-                                                            </tr>
-                                                        ))}
-                                                    </Fragment>
-                                                );
-                                            })}
-                                        </>
-                                    </tbody>
-                                </Table>
-                            </>
-                        )}
+                        {display === DISPLAY.GRAPH ? <GraphDetails days={days} /> : <DetailTable days={days} />}
                     </Fragment>
                 ))}
         </div>
     );
 };
 
-export default RunDetailsPage;
+export default ActivityDetails;

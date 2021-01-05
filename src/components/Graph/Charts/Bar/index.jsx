@@ -38,7 +38,7 @@ const plotChart = ({ chartRef, data, width, height, x, y, theme, xDataType, yDat
         .attr("width", colW) // xScaler(1)
         .attr("y", 0) // height - yScale(d.y * yUnitScale))
         .attr("height", (d) => height - yScaler(d.y * yUnitScale))
-        .attr("transform", (d) => `translate(${index}, ${yScaler(d.y * yUnitScale)})`)
+        .attr("transform", (d) => `translate(${index + 1}, ${yScaler(d.y * yUnitScale)})`)
         // eslint-disable-next-line react/prop-types
         .attr("fill", theme.color)
         .attr("opacity", theme.opacity ? theme.color : "1");
