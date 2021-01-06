@@ -8,17 +8,20 @@ const drawAxis = ({ axisRef, x, y, yScaler, dataType, label, length, depth, alt 
 
     let scale;
 
+    let offset = 0; // Bump the axis off the plot area
     if (!alt) {
         scale = d3.axisLeft();
+        offset = -1;
     } else {
         scale = d3.axisRight();
+        offset = 1;
     }
 
     scale.scale(yScaler);
 
     axisEl.selectAll(".axis-label").remove();
 
-    axisEl.attr("transform", `translate(${x}, ${y})`).call(scale);
+    axisEl.attr("transform", `translate(${x + offset}, ${y})`).call(scale);
 
     if (label) {
         axisEl

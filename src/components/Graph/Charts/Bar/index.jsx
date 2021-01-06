@@ -23,7 +23,7 @@ const plotChart = ({ chartRef, data, width, height, x, y, theme, xDataType, yDat
     // const colW = columnWidth; // < 0.5 ? 0.5 : columnWidth;
     const colSpacing = width < count * (1 + theme.colSpacing) ? 0 : theme.colSpacing;
     const columnWidth = width / count - colSpacing;
-    const colW = xScaler(1) - 1 < 1 ? 1 : xScaler(1) - 1; // columnWidth < 0.5 ? 0.5 : columnWidth;
+    const colW = 2; // columnWidth < 0.5 ? 0.5 : columnWidth;
 
     const xDomain = d3.extent(data, (d) => parseData(d.x, xDataType));
     // const xScaler = scaleData(xDataType)().domain(xDomain).range([0, width]);
@@ -38,7 +38,7 @@ const plotChart = ({ chartRef, data, width, height, x, y, theme, xDataType, yDat
         .attr("width", colW) // xScaler(1)
         .attr("y", 0) // height - yScale(d.y * yUnitScale))
         .attr("height", (d) => height - yScaler(d.y * yUnitScale))
-        .attr("transform", (d) => `translate(${index + 1}, ${yScaler(d.y * yUnitScale)})`)
+        .attr("transform", (d) => `translate(${index * 2}, ${yScaler(d.y * yUnitScale)})`)
         // eslint-disable-next-line react/prop-types
         .attr("fill", theme.color)
         .attr("opacity", theme.opacity ? theme.color : "1");

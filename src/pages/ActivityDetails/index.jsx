@@ -1,22 +1,16 @@
 /* eslint-disable react/prop-types,no-unused-vars */
 import { useSelector } from "react-redux";
 import moment from "moment";
-import { Fragment, useState } from "react";
+import { Fragment, useState, useContext } from "react";
 
-import { Table, TD, TH } from "../../components/Tables";
 import Button from "../../components/Button";
 
 import { KM } from "../../components/Formatters";
 
 import DetailTable from "../../components/DetailTable";
 
-import BarChart from "../../components/Graph/Charts/Bar";
-import LineChart from "../../components/Graph/Charts/Line";
-import Graph from "../../components/Graph";
-import ScatterChart from "../../components/Graph/Charts/Scatter";
-
-import * as DATA_TYPES from "../../components/Graph/constants/dataTypes";
 import GraphSection from "../../components/GraphSection";
+import { DayDataContext } from "./context";
 
 const DISPLAY = {
     GRAPH: "GRAPH",
@@ -28,6 +22,8 @@ const ActivityDetails = ({ type = "run" }) => {
     const currentYear = moment().year();
     const [tab, setTab] = useState(currentYear);
     const [display, setDisplay] = useState(DISPLAY.GRAPH);
+
+    const today = moment().endOf("day");
 
     if (!years) return null;
     return (
@@ -47,25 +43,30 @@ const ActivityDetails = ({ type = "run" }) => {
 
             {Object.values(years)
                 .filter((item) => item.year === tab)
-                .map(({ year, days, total }) => (
-                    <Fragment key={year}>
-                        <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-800">{year}</h2>
-                        <h3 className="text-2xl mt-2 mb-2 text-gray-800">{days.length} activities</h3>
-                        <h3 className="text-2xl mt-2 mb-2 text-gray-800">
-                            <KM meters={total} />
-                            KM covered
-                        </h3>
+                .map(({ year, days, total }) => {
+                    const dataContext = { today, days };
 
-                        <hr className="my-2" />
-                        <Button color="blue" type="button" onClick={() => setDisplay(display === DISPLAY.GRAPH ? DISPLAY.TABLE : DISPLAY.GRAPH)}>
-                            {display === DISPLAY.GRAPH ? "Data table" : "Graphs"}
-                        </Button>
+                    return (
+                        <Fragment key={year}>
+                            <h2 className="text-3xl font-semibold mt-8 mb-4 text-gray-800">{year}</h2>
+                            <h3 className="text-2xl mt-2 mb-2 text-gray-800">{days.length} activities</h3>
+                            <h3 className="text-2xl mt-2 mb-2 text-gray-800">
+                                <KM meters={total} />
+                                KM covered
+                            </h3>
 
-                        <hr className="my-2" />
+                            <hr className="my-2" />
+                            <Button color="blue" type="button" onClick={() => setDisplay(display === DISPLAY.GRAPH ? DISPLAY.TABLE : DISPLAY.GRAPH)}>
+                                {display === DISPLAY.GRAPH ? "Data table" : "Graphs"}
+                            </Button>
 
-                        {display === DISPLAY.GRAPH ? <GraphSection days={days} /> : <DetailTable days={days} />}
-                    </Fragment>
-                ))}
+                            <hr className="my-2" />
+                            <DayDataContext.Provider value={dataContext}>
+                                <>{display === DISPLAY.GRAPH ? <GraphSection days={days} /> : <DetailTable days={days} />}</>
+                            </DayDataContext.Provider>
+                        </Fragment>
+                    );
+                })}
         </div>
     );
 };
