@@ -7,6 +7,8 @@ import ScatterChart from "../Graph/Charts/Scatter";
 import BarChart from "../Graph/Charts/Bar";
 import LineChart from "../Graph/Charts/Line";
 import Tabs from "../Tabs";
+import TabContent from "../Tabs/TabContent";
+
 import { DayDataContext } from "../../pages/ActivityDetails/context";
 
 const useDailyDistance = () => {
@@ -308,8 +310,6 @@ const DistanceRemainingGraph = () => {
 
 const PROGRESS_TYPES = ["OVERALL", "DISTANCE_ELEVATION", "PROGRESS_VS_TARGET", "CUMULATIVE_ELEVATION", "DISTANCE_REMAINING"];
 
-const TabContent = ({ value, state, children }) => <>{value === state ? <>{children}</> : null}</>;
-
 const ProgressGraphs = () => {
     const [progressType, setProgressType] = useState(PROGRESS_TYPES[0]);
 
@@ -323,7 +323,7 @@ const ProgressGraphs = () => {
 
     return (
         <>
-            <Tabs onClick={setProgressType} selected={progressType} options={tabOptions} color="yellow-500" />
+            <Tabs onClick={setProgressType} selected={progressType} options={tabOptions} color="yellow-500" size="text-sm" />
             <div className="py-6">
                 <TabContent value="OVERALL" state={progressType}>
                     <ProgressGraph />

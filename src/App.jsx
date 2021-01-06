@@ -23,10 +23,10 @@ function App() {
 
                     <Route path="/" exact component={HomePage} />
 
-                    <Route path="/run" exact component={ActivityDetails} type="run" />
-                    <Route path="/ride" exact render={() => <ActivityDetails type="ride" />} />
-                    <Route path="/hike" exact render={() => <ActivityDetails type="hike" />} />
-                    <Route path="/walk" exact render={() => <ActivityDetails type="walk" />} />
+                    <Route path="/run" exact component={ActivityDetails} type="run" title="Run" />
+                    <Route path="/ride" exact render={() => <ActivityDetails type="ride" title="Cycle" />} />
+                    <Route path="/hike" exact render={() => <ActivityDetails type="hike" title="Hike" />} />
+                    <Route path="/walk" exact render={() => <ActivityDetails type="walk" title="Walk" />} />
 
                     <Route path="/eddington" exact component={EddingtionDetailsPage} />
                 </Switch>

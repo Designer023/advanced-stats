@@ -127,6 +127,7 @@ const processActivities = (activities, activityTypes) => {
                 const { days } = activityByYearsNew[yearNum];
                 let yc = 0;
                 let yearElevationGain = 0;
+                let totalActivityCount = 0;
 
                 days.forEach((currentDay, i) => {
                     const target = currentDay.targetValue;
@@ -135,6 +136,8 @@ const processActivities = (activities, activityTypes) => {
                     const dayC = currentDay.activities.length ? currentDay.activities.reduce((a, c) => a + c.distance, 0) : 0;
                     tc += dayC;
                     yc += dayC;
+
+                    totalActivityCount += currentDay.activities.length;
 
                     // Elevation accumulation
                     const dayClimb = currentDay.activities.length ? currentDay.activities.reduce((a, c) => a + c.total_elevation_gain, 0) : 0;
@@ -170,6 +173,7 @@ const processActivities = (activities, activityTypes) => {
 
                 activityByYearsNew[yearNum].total = yc;
                 activityByYearsNew[yearNum].totalElevation = yearElevationGain;
+                activityByYearsNew[yearNum].totalActivityCount = totalActivityCount;
             });
 
             data[type.toLowerCase()] = {

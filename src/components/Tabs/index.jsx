@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import PropTypes from "prop-types";
 
-const Tabs = ({ options, selected, onClick, color }) => {
+const Tabs = ({ options, selected, onClick, color, size }) => {
     return (
         <div className="flex flex-wrap">
             <div className="w-full">
@@ -10,7 +10,7 @@ const Tabs = ({ options, selected, onClick, color }) => {
                         <li key={option.value} className="-mb-px mr-2 last:mr-0 flex-auto text-center">
                             <button
                                 type="button"
-                                className={`text-md w-full font-bold uppercase px-5 py-3 rounded block leading-normal ${option.value === selected ? `text-white bg-${color}` : `text-${color} bg-white`}`}
+                                className={`${size} w-full font-bold uppercase px-5 py-3 rounded block leading-normal ${option.value === selected ? `text-white bg-${color}` : `text-${color} bg-white`}`}
                                 onClick={() => onClick(option.value)}
                             >
                                 {option.icon || null} {option.text}
@@ -24,11 +24,13 @@ const Tabs = ({ options, selected, onClick, color }) => {
 };
 
 Tabs.propTypes = {
-    color: PropTypes.string
+    color: PropTypes.string,
+    size: PropTypes.string
 };
 
 Tabs.defaultProps = {
-    color: "gray-600"
+    color: "gray-600",
+    size: "text-md"
 };
 
 export default Tabs;
