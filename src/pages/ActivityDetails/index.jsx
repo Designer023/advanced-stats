@@ -18,7 +18,7 @@ const DISPLAY = {
 };
 
 const DataPanel = ({ title, value }) => (
-    <div className="w-full md:w-6/12 lg:w-3/12 xl:w-3/12 px-4 ">
+    <div className="w-full md:w-6/12 lg:w-4/12 xl:w-4/12 px-4 ">
         <div className="relative flex flex-col min-w-0 break-words bg-white rounded mb-6 xl:mb-0 shadow-lg bg-gray-800">
             <div className="flex-auto p-4">
                 <div className="flex flex-wrap">
@@ -78,6 +78,8 @@ const SelectDropDown = ({ options, onClick, value }) => {
 
 const ActivityDetails = ({ type = "run", title = "Run" }) => {
     const { years } = useSelector((state) => state.processedData.activities[type]);
+    const { years: yearScores } = useSelector((state) => state.processedData.eddington[type]);
+
     const currentYear = moment().year();
     const [tab, setTab] = useState(currentYear);
     const [display, setDisplay] = useState(DISPLAY.GRAPH);
@@ -118,7 +120,7 @@ const ActivityDetails = ({ type = "run", title = "Run" }) => {
                 .filter((item) => item.year === tab)
                 .map(({ year, days, total, totalElevation, totalActivityCount }) => {
                     const dataContext = { today, days };
-
+                    const { score } = yearScores[year];
                     return (
                         <Fragment key={year}>
                             <div className="my-6">
@@ -129,6 +131,15 @@ const ActivityDetails = ({ type = "run", title = "Run" }) => {
                                         value={
                                             <>
                                                 <KM meters={total} /> km
+                                            </>
+                                        }
+                                    />
+
+                                    <DataPanel
+                                        title="Avg distance"
+                                        value={
+                                            <>
+                                                <KM meters={total / totalActivityCount} /> km
                                             </>
                                         }
                                     />
@@ -147,6 +158,7 @@ const ActivityDetails = ({ type = "run", title = "Run" }) => {
                                     />
 
                                     <DataPanel title="Target distance" value={3000} />
+                                    <DataPanel title="Eddington value" value={score} />
                                 </div>
                             </div>
 
