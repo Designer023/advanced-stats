@@ -1,6 +1,7 @@
 // import { useSelector } from "react-redux";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+// import moment from "moment";
 import EddingtonTable from "../../components/EddingtonTable";
 import ScoreTable from "../../components/ScoreTable";
 // eslint-disable-next-line no-unused-vars
@@ -8,6 +9,9 @@ import Graph from "../../components/Graph";
 // eslint-disable-next-line no-unused-vars
 import BarChart from "../../components/Graph/Charts/Bar";
 import * as DATA_TYPES from "../../components/Graph/constants/dataTypes";
+import Tabs from "../../components/Tabs";
+import TabContent from "../../components/Tabs/TabContent";
+import SelectDropDown from "../../components/SelectDropdown";
 
 // eslint-disable-next-line react/prop-types
 const EddingtonYear = ({ year, type }) => {
@@ -47,22 +51,56 @@ const EddingtonYear = ({ year, type }) => {
     );
 };
 
+const activityTypes = ["Run", "Ride", "Hike", "Walk"];
+
 // eslint-disable-next-line react/prop-types
 const EddingtonActivity = ({ type }) => {
-    const { overall, years, breakdown } = useSelector((state) => state.processedData.eddington.run);
+    const { overall, years, breakdown } = useSelector((state) => state.processedData.eddington[type]);
 
     const [view, setView] = useState("data");
 
     // eslint-disable-next-line no-unused-vars
     const [data, setData] = useState(breakdown);
+    const currentYear = null; // `${moment().year()}`;
+
+    const [tab, setTab] = useState(null);
+
+    useEffect(() => {
+        const lastYear = Object.values(years).slice(-1)[0].year || currentYear;
+        setTab(lastYear);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        const lastYear = Object.values(years).slice(-1)[0].year || currentYear;
+        setTab(lastYear);
+    }, [type, currentYear, years]);
 
     return (
         <>
-            <h4 className="text-3xl font-semibold mb-2 text-gray-800 flex justify-between">
-                <span>Run</span>
-                <span>{overall}</span>
-            </h4>
+            <div className="flex flex-row w-full mt-8 mb-8 justify-between flex-nowrap">
+                <h4 className="text-3xl font-semibold mb-2 text-gray-800">
+                    <span>{type}</span>
+                </h4>
+
+                <div>
+                    {tab ? (
+                        <SelectDropDown
+                            value={tab}
+                            onClick={setTab}
+                            options={Object.keys(years)
+                                .map((year) => {
+                                    return { text: year, value: year };
+                                })
+                                .reverse()}
+                        />
+                    ) : null}
+                </div>
+            </div>
+
             <hr className="mb-6 mt-2" />
+
+            {tab ? <EddingtonYear year={tab} type={type} key={`${tab}=${type}`} /> : null}
 
             <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -120,6 +158,14 @@ const EddingtonActivity = ({ type }) => {
 };
 
 const EddingtionDetailsPage = () => {
+    // const types = useSelector((state) => state.processedData.eddington);
+
+    const [currentType, setType] = useState(activityTypes[0]);
+
+    const typeOptions = activityTypes.map((t) => {
+        return { text: t, value: t };
+    });
+
     return (
         <div>
             <h1 className="text-5xl font-semibold mt-8 mb-8 text-gray-800">
@@ -128,7 +174,25 @@ const EddingtionDetailsPage = () => {
             <p>Eddington is credited with devising a measure of a cyclist&apos;s long-distance riding achievements. The Eddington number in the context of cycling is defined as the maximum number E such that the cyclist has cycled E miles on E days.</p>
             <hr className="mt-6 mb-12" />
 
-            <EddingtonActivity type="run" />
+            <Tabs onClick={setType} selected={currentType} options={typeOptions} color="blue-400" />
+
+            <div className="py-6">
+                <TabContent value="Run" state={currentType}>
+                    <EddingtonActivity type="run" />
+                </TabContent>
+
+                <TabContent value="Ride" state={currentType}>
+                    <EddingtonActivity type="ride" />
+                </TabContent>
+
+                <TabContent value="Hike" state={currentType}>
+                    <EddingtonActivity type="hike" />
+                </TabContent>
+
+                <TabContent value="Walk" state={currentType}>
+                    <EddingtonActivity type="walk" />
+                </TabContent>
+            </div>
         </div>
     );
 };
