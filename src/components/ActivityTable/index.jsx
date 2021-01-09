@@ -1,9 +1,9 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import moment from "moment";
 
 import { Table, TD, TH } from "../Tables";
-import { KM, Minutes, Round } from "../Formatters";
+import { KM, Minutes, Meters } from "../Formatters";
 
 // eslint-disable-next-line react/prop-types
 const ActivityTable = ({ activityType }) => {
@@ -17,40 +17,41 @@ const ActivityTable = ({ activityType }) => {
         filtered = activities.filter((activity) => activity.type === activityType);
     }
 
-    const cumulative = useMemo(() => {
-        let total = 0;
+    filtered = filtered.slice(Math.max(filtered.length - 7, 0));
 
-        return filtered.map((item) => {
-            const currentDay = moment(item.start_date).dayOfYear();
-
-            total += item.distance;
-
-            return {
-                ...item,
-                total,
-                currentDay
-            };
-        });
-    }, [filtered]);
+    // const cumulative = useMemo(() => {
+    //
+    //
+    //     return filtered.map((item) => {
+    //         const currentDay = moment(item.start_date).dayOfYear();
+    //
+    //
+    //         return {
+    //             ...item,
+    //             currentDay
+    //         };
+    //     });
+    // }, [filtered]);
 
     return (
         <Table>
             <thead>
                 <tr>
-                    <TH>Day</TH>
+                    <TH>Date</TH>
                     <TH>Name</TH>
+                    {!activityType ? <TH>Type</TH> : null}
                     <TH>Distance</TH>
                     <TH>Time</TH>
                     <TH>Elevation</TH>
-                    <TH>Total</TH>
                 </tr>
             </thead>
             <tbody>
-                {cumulative.map((activity) => {
+                {filtered.map((activity) => {
                     return (
                         <tr key={activity.id}>
-                            <TD>{activity.currentDay}</TD>
+                            <TD>{moment(activity.start_date).format("Do MMM, YYYY")}</TD>
                             <TD>{activity.name}</TD>
+                            {!activityType ? <TD>{activity.type}</TD> : null}
                             <TD>
                                 <KM meters={activity.distance} />
                             </TD>
@@ -58,10 +59,7 @@ const ActivityTable = ({ activityType }) => {
                                 <Minutes seconds={activity.moving_time} />
                             </TD>
                             <TD>
-                                <Round value={activity.total_elevation_gain} />
-                            </TD>
-                            <TD>
-                                <KM meters={activity.total} />
+                                <Meters meters={activity.total_elevation_gain} />
                             </TD>
                         </tr>
                     );

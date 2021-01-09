@@ -4,7 +4,6 @@ import ActivityTable from "../../components/ActivityTable";
 
 const HomePage = () => {
     const activities = useSelector((state) => state.athlete.activities);
-    const loading = useSelector((state) => state.athlete.loading);
     const { isAuthenticated } = useSelector((state) => state.auth);
 
     return (
@@ -16,18 +15,33 @@ const HomePage = () => {
                 <>
                     {activities && activities.length ? (
                         <div className="mt-4 mb-6">
-                            <h3 className="text-3xl font-semibold mt-4 mb-4 text-gray-600">Latest</h3>
+                            <h2 className="text-3xl font-semibold mt-4 mb-4 text-gray-600">Latest</h2>
 
-                            {loading ? (
-                                <div className="px-8 py-16 bg-gray-50 rounded-lg border border-dashed border-gray-300	">
-                                    <h3 className="text-2xl text-center text-gray-400">Loading data</h3>
-                                </div>
-                            ) : (
-                                <ActivityTable activityType="Run" />
-                            )}
+                            <h3 className="text-xl font-semibold mt-4 mb-4 text-gray-600">All</h3>
+                            <ActivityTable />
+
+                            <h3 className="text-xl font-semibold mt-4 mb-4 text-gray-600">Running</h3>
+                            <ActivityTable activityType="Run" />
+
+                            <hr className="mb-6 mt-2" />
+
+                            <h3 className="text-xl font-semibold mt-4 mb-4 text-gray-600">Ride</h3>
+                            <ActivityTable activityType="Ride" />
+
+                            <hr className="mb-6 mt-2" />
+
+                            <h3 className="text-xl font-semibold mt-4 mb-4 text-gray-600">Hike</h3>
+                            <ActivityTable activityType="Hike" />
+
+                            <hr className="mb-6 mt-2" />
+
+                            <h3 className="text-xl font-semibold mt-4 mb-4 text-gray-600">Walk</h3>
+                            <ActivityTable activityType="Walk" />
+
+                            <hr className="mb-6 mt-2" />
                         </div>
                     ) : (
-                        <h3>No activities</h3>
+                        <h3>No activities. Please sync your activities.</h3>
                     )}
                 </>
             ) : (

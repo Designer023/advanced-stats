@@ -176,7 +176,7 @@ export const EddingtonYearSummary = ({ type, year }) => {
                 <div className="flex flex-wrap">
                     <DataPanel value={score} title="Year Eddington score" />
                     <DataPanel value={`${breakdown.length - 1} km`} title="Maximum distance" />
-                    <DataPanel value={`${nextGoal.next} in ${nextGoal.diff} ${type}s`} title="Next distance" />
+                    <DataPanel value={`${nextGoal.next} - ${nextGoal.diff} ${type}s`} title="Next score" />
                 </div>
             </div>
 
@@ -242,16 +242,16 @@ export const EddingtonSummary = ({ type }) => {
     return (
         <>
             <hr className="my-2" />
-            <Tabs onClick={setDisplay} options={displayOptions} selected={display} />
-
-            <hr className="my-2" />
             <div className="my-6">
                 <div className="flex flex-wrap">
                     <DataPanel value={overall} title="All time Eddington score" />
                     <DataPanel value={`${breakdown.length - 1} km`} title="Maximum distance" />
-                    <DataPanel value={`${nextGoal.next} in ${nextGoal.diff} ${type}s`} title="Next distance" />
+                    <DataPanel value={`${nextGoal.next} - ${nextGoal.diff} ${type}s`} title="Next score" />
                 </div>
             </div>
+
+            <hr className="my-2" />
+            <Tabs onClick={setDisplay} options={displayOptions} selected={display} />
 
             <div className="py-6">
                 <TabContent value={DISPLAY.GRAPH} state={display}>
