@@ -12,26 +12,14 @@ import { DayDataContext } from "./context";
 import Tabs from "../../components/Tabs";
 import TabContent from "../../components/Tabs/TabContent";
 import SelectDropDown from "../../components/SelectDropdown";
+import DataPanel from "../../components/ActivityDetailTable/DataPanel";
+import { EddingtonYearSummary } from "../Eddington";
 
 const DISPLAY = {
     GRAPH: "GRAPH",
-    TABLE: "TABLE"
+    TABLE: "TABLE",
+    EDDINGTON: "EDDINGTON"
 };
-
-const DataPanel = ({ title, value }) => (
-    <div className="w-full md:w-6/12 lg:w-4/12 xl:w-4/12 px-4 ">
-        <div className="relative flex flex-col min-w-0 break-words bg-white rounded mb-6 xl:mb-0 shadow-lg bg-gray-800">
-            <div className="flex-auto p-4">
-                <div className="flex flex-wrap">
-                    <div className="relative w-full pr-4 max-w-full flex-grow flex-1">
-                        <h5 className="text-yellow-500 uppercase font-bold text-xs">{title}</h5>
-                        <span className="font-semibold text-xl text-white">{value}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-);
 
 const ActivityDetails = ({ type = "run", title = "Run" }) => {
     const { years } = useSelector((state) => state.processedData.activities[type]);
@@ -50,7 +38,8 @@ const ActivityDetails = ({ type = "run", title = "Run" }) => {
 
     const displayOptions = [
         { text: "Graphs", value: DISPLAY.GRAPH },
-        { text: "Data Table", value: DISPLAY.TABLE }
+        { text: "Data Table", value: DISPLAY.TABLE },
+        { text: "Eddington Score", value: DISPLAY.EDDINGTON }
     ];
 
     if (!years) return null;
@@ -132,6 +121,10 @@ const ActivityDetails = ({ type = "run", title = "Run" }) => {
 
                                     <TabContent value={DISPLAY.TABLE} state={display}>
                                         <DetailTable days={days} />
+                                    </TabContent>
+
+                                    <TabContent value={DISPLAY.EDDINGTON} state={display}>
+                                        <EddingtonYearSummary type={type} year={year} />
                                     </TabContent>
                                 </div>
                             </DayDataContext.Provider>

@@ -1,17 +1,14 @@
-// import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-// import moment from "moment";
 import EddingtonTable from "../../components/EddingtonTable";
 import ScoreTable from "../../components/ScoreTable";
-// eslint-disable-next-line no-unused-vars
 import Graph from "../../components/Graph";
-// eslint-disable-next-line no-unused-vars
 import BarChart from "../../components/Graph/Charts/Bar";
 import * as DATA_TYPES from "../../components/Graph/constants/dataTypes";
 import Tabs from "../../components/Tabs";
 import TabContent from "../../components/Tabs/TabContent";
 import SelectDropDown from "../../components/SelectDropdown";
+import DataPanel from "../../components/ActivityDetailTable/DataPanel";
 
 // eslint-disable-next-line react/prop-types
 const EddingtonYear = ({ year, type }) => {
@@ -53,7 +50,7 @@ const EddingtonYear = ({ year, type }) => {
 
 const activityTypes = ["Run", "Ride", "Hike", "Walk"];
 
-// eslint-disable-next-line react/prop-types
+// eslint-disable-next-line react/prop-types,no-unused-vars
 const EddingtonActivity = ({ type }) => {
     const { overall, years, breakdown } = useSelector((state) => state.processedData.eddington[type]);
 
@@ -135,7 +132,7 @@ const EddingtonActivity = ({ type }) => {
                                             theme: {
                                                 color: "#333b37"
                                             },
-                                            label: "Eddington values"
+                                            label: "Activities at distance N"
                                         }
                                     ]}
                                     yLabel="Count"
@@ -152,6 +149,138 @@ const EddingtonActivity = ({ type }) => {
                         <EddingtonYear year={year} type={type} />
                     </div>
                 ))}
+            </div>
+        </>
+    );
+};
+
+// eslint-disable-next-line react/prop-types
+export const EddingtonYearSummary = ({ type, year }) => {
+    // eslint-disable-next-line no-unused-vars
+    const { breakdown, score } = useSelector((state) => state.processedData.eddington[type].years[year]);
+
+    let nextGoal = { next: 0, diff: 0 };
+
+    for (let i = 1; i < breakdown.length; i += 1) {
+        const value = breakdown[i];
+        // if (value > i) continue;
+        if (value < i) {
+            nextGoal = { next: i, diff: i - value };
+            break;
+        }
+    }
+
+    return (
+        <>
+            <div className="my-6">
+                <div className="flex flex-wrap">
+                    <DataPanel value={score} title="Year Eddington score" />
+                    <DataPanel value={`${breakdown.length - 1} km`} title="Maximum distance" />
+                    <DataPanel value={`${nextGoal.next} in ${nextGoal.diff} ${type}s`} title="Next distance" />
+                </div>
+            </div>
+
+            <div>
+                <Graph
+                    xDataType={DATA_TYPES.NUMBER}
+                    yDataType={DATA_TYPES.NUMBER}
+                    plotData={[
+                        {
+                            chartComponent: BarChart,
+                            data: breakdown
+                                .filter((i) => i > 0)
+                                .map((value, i) => {
+                                    return { y: value, x: i };
+                                }),
+                            theme: {
+                                color: "#35cb6c"
+                            },
+                            label: "Activities at distance N"
+                        }
+                    ]}
+                    yLabel="Count"
+                    xLabel="Number"
+                    height={400}
+                />
+            </div>
+
+            <div>
+                <EddingtonTable data={breakdown} />
+            </div>
+        </>
+    );
+};
+
+const DISPLAY = {
+    GRAPH: "GRAPH",
+    TABLE: "TABLE"
+};
+
+// eslint-disable-next-line react/prop-types
+export const EddingtonSummary = ({ type }) => {
+    // eslint-disable-next-line no-unused-vars
+    const { breakdown, overall } = useSelector((state) => state.processedData.eddington[type]);
+
+    const displayOptions = [
+        { text: "Graphs", value: DISPLAY.GRAPH },
+        { text: "Data Table", value: DISPLAY.TABLE }
+    ];
+
+    const [display, setDisplay] = useState(DISPLAY.GRAPH);
+
+    let nextGoal = { next: 0, diff: 0 };
+
+    for (let i = 1; i < breakdown.length; i += 1) {
+        const value = breakdown[i];
+        // if (value > i) continue;
+        if (value < i) {
+            nextGoal = { next: i, diff: i - value };
+            break;
+        }
+    }
+
+    return (
+        <>
+            <hr className="my-2" />
+            <Tabs onClick={setDisplay} options={displayOptions} selected={display} />
+
+            <hr className="my-2" />
+            <div className="my-6">
+                <div className="flex flex-wrap">
+                    <DataPanel value={overall} title="All time Eddington score" />
+                    <DataPanel value={`${breakdown.length - 1} km`} title="Maximum distance" />
+                    <DataPanel value={`${nextGoal.next} in ${nextGoal.diff} ${type}s`} title="Next distance" />
+                </div>
+            </div>
+
+            <div className="py-6">
+                <TabContent value={DISPLAY.GRAPH} state={display}>
+                    <Graph
+                        xDataType={DATA_TYPES.NUMBER}
+                        yDataType={DATA_TYPES.NUMBER}
+                        plotData={[
+                            {
+                                chartComponent: BarChart,
+                                data: breakdown
+                                    .filter((i) => i > 0)
+                                    .map((value, i) => {
+                                        return { y: value, x: i };
+                                    }),
+                                theme: {
+                                    color: "#35cb6c"
+                                },
+                                label: "Eddington values"
+                            }
+                        ]}
+                        yLabel="Count"
+                        xLabel="Number"
+                        height={400}
+                    />
+                </TabContent>
+
+                <TabContent value={DISPLAY.TABLE} state={display}>
+                    <EddingtonTable data={breakdown} />
+                </TabContent>
             </div>
         </>
     );
@@ -174,23 +303,28 @@ const EddingtionDetailsPage = () => {
             <p>Eddington is credited with devising a measure of a cyclist&apos;s long-distance riding achievements. The Eddington number in the context of cycling is defined as the maximum number E such that the cyclist has cycled E miles on E days.</p>
             <hr className="mt-6 mb-12" />
 
-            <Tabs onClick={setType} selected={currentType} options={typeOptions} color="blue-400" />
+            <Tabs onClick={setType} selected={currentType} options={typeOptions} color="green-500" />
 
             <div className="py-6">
                 <TabContent value="Run" state={currentType}>
-                    <EddingtonActivity type="run" />
+                    <EddingtonSummary type="run" />
+
+                    {/* <EddingtonActivity type="run" /> */}
                 </TabContent>
 
                 <TabContent value="Ride" state={currentType}>
-                    <EddingtonActivity type="ride" />
+                    <EddingtonSummary type="ride" />
+                    {/* <EddingtonActivity type="ride" /> */}
                 </TabContent>
 
                 <TabContent value="Hike" state={currentType}>
-                    <EddingtonActivity type="hike" />
+                    <EddingtonSummary type="hike" />
+                    {/* <EddingtonActivity type="hike" /> */}
                 </TabContent>
 
                 <TabContent value="Walk" state={currentType}>
-                    <EddingtonActivity type="walk" />
+                    <EddingtonSummary type="walk" />
+                    {/* <EddingtonActivity type="walk" /> */}
                 </TabContent>
             </div>
         </div>
