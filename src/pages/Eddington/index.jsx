@@ -8,7 +8,7 @@ import * as DATA_TYPES from "../../components/Graph/constants/dataTypes";
 import Tabs from "../../components/Tabs";
 import TabContent from "../../components/Tabs/TabContent";
 import SelectDropDown from "../../components/SelectDropdown";
-import DataPanel from "../../components/ActivityDetailTable/DataPanel";
+import DataPanel from "../../components/DataPanel";
 
 // eslint-disable-next-line react/prop-types
 const EddingtonYear = ({ year, type }) => {

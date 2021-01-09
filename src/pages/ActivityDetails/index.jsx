@@ -12,7 +12,7 @@ import { DayDataContext } from "./context";
 import Tabs from "../../components/Tabs";
 import TabContent from "../../components/Tabs/TabContent";
 import SelectDropDown from "../../components/SelectDropdown";
-import DataPanel from "../../components/ActivityDetailTable/DataPanel";
+import DataPanel from "../../components/DataPanel";
 import { EddingtonYearSummary } from "../Eddington";
 
 const DISPLAY = {
