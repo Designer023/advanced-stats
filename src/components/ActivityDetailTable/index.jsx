@@ -4,15 +4,12 @@ import { useSelector } from "react-redux";
 import moment from "moment";
 import range from "lodash/range";
 
+import { round } from "../Formatters";
 import eddingtonValue from "../../utils/eddington";
 
 const tableHeaderClasses = "px-4 py-2 text-grey-600 dark:bg-gray-800";
 const tableClasses = "border border-green-500 px-4 py-2 text-gray-900 font-medium bg-green-50 dark:bg-gray-800";
 const tableClassesTodo = "border border-grey-800 px-4 py-2 text-gray-900 font-medium text-opacity-25";
-
-const round = (num) => {
-    return Math.round(num * 100 + Number.EPSILON) / 100;
-};
 
 const CompletedRow = ({ activity, day, target }) => (
     <tr>

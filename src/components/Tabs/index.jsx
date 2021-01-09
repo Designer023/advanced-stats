@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import PropTypes from "prop-types";
 
 const Tabs = ({ options, selected, onClick, color, size }) => {
@@ -24,6 +23,14 @@ const Tabs = ({ options, selected, onClick, color, size }) => {
 };
 
 Tabs.propTypes = {
+    options: PropTypes.arrayOf(
+        PropTypes.shape({
+            value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+            text: PropTypes.string.isRequired
+        })
+    ).isRequired,
+    selected: PropTypes.string.isRequired,
+    onClick: PropTypes.func.isRequired,
     color: PropTypes.string,
     size: PropTypes.string
 };

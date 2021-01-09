@@ -7,6 +7,7 @@ const KM = ({ meters }) => {
     return <>{round(meters / 1000)}</>;
 };
 
+// eslint-disable-next-line react/prop-types
 const Meters = ({ meters }) => {
     return <>{round(meters)}</>;
 };
@@ -22,4 +23,4 @@ const Round = ({ value }) => {
 };
 
 // eslint-disable-next-line import/prefer-default-export
-export { KM, Round, Minutes, Meters };
+export { KM, Round, Minutes, Meters, round };

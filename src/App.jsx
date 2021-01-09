@@ -2,10 +2,11 @@ import { Route, Switch } from "react-router";
 import { useSelector } from "react-redux";
 
 import Nav from "./components/Nav";
-import Token from "./components/Token";
 import Loading from "./components/Loading";
-import ActivityDetails from "./pages/ActivityDetails";
 import AuthStatus from "./components/AuthStatus";
+
+import Token from "./pages/Token";
+import ActivityDetails from "./pages/ActivityDetails";
 import HomePage from "./pages/Home";
 import EddingtionDetailsPage from "./pages/Eddington";
 

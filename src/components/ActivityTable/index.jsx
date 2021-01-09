@@ -19,20 +19,6 @@ const ActivityTable = ({ activityType }) => {
 
     filtered = filtered.slice(Math.max(filtered.length - 7, 0));
 
-    // const cumulative = useMemo(() => {
-    //
-    //
-    //     return filtered.map((item) => {
-    //         const currentDay = moment(item.start_date).dayOfYear();
-    //
-    //
-    //         return {
-    //             ...item,
-    //             currentDay
-    //         };
-    //     });
-    // }, [filtered]);
-
     return (
         <Table>
             <thead>
