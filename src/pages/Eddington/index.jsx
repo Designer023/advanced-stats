@@ -7,8 +7,7 @@ import * as DATA_TYPES from "../../components/Graph/constants/dataTypes";
 import Tabs from "../../components/Tabs";
 import TabContent from "../../components/Tabs/TabContent";
 import DataPanel from "../../components/DataPanel";
-
-const activityTypes = ["Run", "Ride", "Hike", "Walk"];
+import { ACTIVITY_TYPES } from "../../config/activities";
 
 // eslint-disable-next-line react/prop-types
 export const EddingtonYearSummary = ({ type, year }) => {
@@ -145,9 +144,9 @@ export const EddingtonSummary = ({ type }) => {
 const EddingtionDetailsPage = () => {
     // const types = useSelector((state) => state.processedData.eddington);
 
-    const [currentType, setType] = useState(activityTypes[0]);
+    const [currentType, setType] = useState(ACTIVITY_TYPES[0]);
 
-    const typeOptions = activityTypes.map((t) => {
+    const typeOptions = ACTIVITY_TYPES.map((t) => {
         return { text: t, value: t };
     });
 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 
 // eslint-disable-next-line react/prop-types
 const SelectDropDown = ({ options, onClick, value }) => {
@@ -45,6 +46,17 @@ const SelectDropDown = ({ options, onClick, value }) => {
             ) : null}
         </div>
     );
+};
+
+SelectDropDown.propTypes = {
+    options: PropTypes.arrayOf(
+        PropTypes.shape({
+            value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+            text: PropTypes.string.isRequired
+        })
+    ).isRequired,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    onClick: PropTypes.func.isRequired
 };
 
 export default SelectDropDown;

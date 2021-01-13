@@ -2,14 +2,14 @@
 import { call, put, select, takeEvery } from "redux-saga/effects";
 import moment from "moment";
 import range from "lodash/range";
-
+import { ACTIVITY_TYPES } from "../../../config/activities";
 import eddingtonValue from "../../../utils/eddington";
 
 const average = (arr) => arr.reduce((p, c) => p + c, 0) / arr.length;
 
-const processEddington = (activities, activityTypes) => {
+const processEddington = (activities) => {
     const data = {};
-    activityTypes.forEach((type) => {
+    ACTIVITY_TYPES.forEach((type) => {
         const filteredActivity = activities.filter((activity) => activity.type === type);
 
         const eddingtonNumbers = [0];
@@ -60,137 +60,133 @@ const processEddington = (activities, activityTypes) => {
     return data;
 };
 
-const processActivities = (activities, activityTypes) => {
+const processActivities = (activities) => {
     const data = {};
-    activityTypes
-        .sort((a, b) => a.upload_id - b.upload_id)
-        .forEach((type) => {
-            const filteredActivity = activities.filter((activity) => activity.type === type);
+    ACTIVITY_TYPES.sort((a, b) => a.upload_id - b.upload_id).forEach((type) => {
+        const filteredActivity = activities.filter((activity) => activity.type === type);
 
-            const activityByYearsNew = {};
+        const activityByYearsNew = {};
 
-            // 1. Create all days in years
-            // Find years used by activities
-            const usedYears = filteredActivity.reduce((a, c) => {
-                const y = moment(c.start_date).year();
-                if (!a.includes(y)) a.push(y);
-                return a;
-            }, []);
+        // 1. Create all days in years
+        // Find years used by activities
+        const usedYears = filteredActivity.reduce((a, c) => {
+            const y = moment(c.start_date).year();
+            if (!a.includes(y)) a.push(y);
+            return a;
+        }, []);
 
-            // Generate all days with default information
-            usedYears.forEach((year) => {
-                /**
-                 * Create days for a year
-                 * @type {number}
-                 */
-                const thisYearDays = moment().year(year).endOf("year").dayOfYear(); // 1 -36(5|6)
-                const dayNumsToUse = range(1, thisYearDays + 1); // Range is upto, not inclusive
-                activityByYearsNew[year] = {
-                    year,
-                    days: [
-                        ...dayNumsToUse.map((day) => ({
-                            day,
-                            date: moment().year(year).dayOfYear(Number(day)).startOf("day").format(),
-                            activities: [],
-                            total: null,
-                            yearCumulative: null,
-                            totalCumulative: null,
-                            remainingYearTarget: null,
-                            requiredPerDay: null,
-                            targetValue: 3000 * 1000, // Todo: get from state/settings
-                            dayClimb: null,
-                            yearElevationGain: null,
-                            totalElevationGain: null
-                        }))
-                    ],
-                    total: null
+        // Generate all days with default information
+        usedYears.forEach((year) => {
+            /**
+             * Create days for a year
+             * @type {number}
+             */
+            const thisYearDays = moment().year(year).endOf("year").dayOfYear(); // 1 -36(5|6)
+            const dayNumsToUse = range(1, thisYearDays + 1); // Range is upto, not inclusive
+            activityByYearsNew[year] = {
+                year,
+                days: [
+                    ...dayNumsToUse.map((day) => ({
+                        day,
+                        date: moment().year(year).dayOfYear(Number(day)).startOf("day").format(),
+                        activities: [],
+                        total: null,
+                        yearCumulative: null,
+                        totalCumulative: null,
+                        remainingYearTarget: null,
+                        requiredPerDay: null,
+                        targetValue: 3000 * 1000, // Todo: get from state/settings
+                        dayClimb: null,
+                        yearElevationGain: null,
+                        totalElevationGain: null
+                    }))
+                ],
+                total: null
+            };
+        });
+
+        // append all activities to days
+
+        filteredActivity.forEach((fActivity) => {
+            const actDate = moment(fActivity.start_date);
+            const yearOfAct = actDate.year();
+            const dayOfActInYear = actDate.dayOfYear();
+
+            activityByYearsNew[yearOfAct].days[dayOfActInYear - 1].activities.push(fActivity);
+        });
+        // Math the results
+
+        let tc = 0;
+        let totalElevationGain = 0;
+        const rollingAverage = [];
+        const maxRA = 28;
+
+        Object.keys(activityByYearsNew).forEach((yearNum) => {
+            const { days } = activityByYearsNew[yearNum];
+            let yc = 0;
+            let yearElevationGain = 0;
+            let totalActivityCount = 0;
+
+            days.forEach((currentDay, i) => {
+                const target = currentDay.targetValue;
+                const remaining = target - yc; // before we add the day taregt so it's eq midnight
+                const requiredPerDay = remaining > 0 ? remaining / (days.length - i) : null; // This is the amount needed today (and all days after at this level)
+                const dayC = currentDay.activities.length ? currentDay.activities.reduce((a, c) => a + c.distance, 0) : 0;
+                tc += dayC;
+                yc += dayC;
+
+                totalActivityCount += currentDay.activities.length;
+
+                // Elevation accumulation
+                const dayClimb = currentDay.activities.length ? currentDay.activities.reduce((a, c) => a + c.total_elevation_gain, 0) : 0;
+                yearElevationGain += dayClimb;
+                totalElevationGain += dayClimb;
+
+                // rolling Average
+                rollingAverage.push(dayC);
+
+                while (rollingAverage.length > maxRA) {
+                    rollingAverage.shift();
+                }
+
+                const ra30 = average(rollingAverage);
+                const ra7 = average(rollingAverage.slice(-7));
+
+                const remainingYearTarget = remaining - dayC > 0 ? remaining - dayC : 0;
+                // Update day:
+                activityByYearsNew[yearNum].days[currentDay.day - 1] = {
+                    ...currentDay,
+                    total: dayC,
+                    yearCumulative: yc,
+                    totalCumulative: tc,
+                    remainingYearTarget,
+                    requiredPerDay,
+                    ra30,
+                    ra7,
+                    dayElevation: dayClimb,
+                    yearElevationGain,
+                    totalElevationGain
                 };
             });
 
-            // append all activities to days
-
-            filteredActivity.forEach((fActivity) => {
-                const actDate = moment(fActivity.start_date);
-                const yearOfAct = actDate.year();
-                const dayOfActInYear = actDate.dayOfYear();
-
-                activityByYearsNew[yearOfAct].days[dayOfActInYear - 1].activities.push(fActivity);
-            });
-            // Math the results
-
-            let tc = 0;
-            let totalElevationGain = 0;
-            const rollingAverage = [];
-            const maxRA = 28;
-
-            Object.keys(activityByYearsNew).forEach((yearNum) => {
-                const { days } = activityByYearsNew[yearNum];
-                let yc = 0;
-                let yearElevationGain = 0;
-                let totalActivityCount = 0;
-
-                days.forEach((currentDay, i) => {
-                    const target = currentDay.targetValue;
-                    const remaining = target - yc; // before we add the day taregt so it's eq midnight
-                    const requiredPerDay = remaining > 0 ? remaining / (days.length - i) : null; // This is the amount needed today (and all days after at this level)
-                    const dayC = currentDay.activities.length ? currentDay.activities.reduce((a, c) => a + c.distance, 0) : 0;
-                    tc += dayC;
-                    yc += dayC;
-
-                    totalActivityCount += currentDay.activities.length;
-
-                    // Elevation accumulation
-                    const dayClimb = currentDay.activities.length ? currentDay.activities.reduce((a, c) => a + c.total_elevation_gain, 0) : 0;
-                    yearElevationGain += dayClimb;
-                    totalElevationGain += dayClimb;
-
-                    // rolling Average
-                    rollingAverage.push(dayC);
-
-                    while (rollingAverage.length > maxRA) {
-                        rollingAverage.shift();
-                    }
-
-                    const ra30 = average(rollingAverage);
-                    const ra7 = average(rollingAverage.slice(-7));
-
-                    const remainingYearTarget = remaining - dayC > 0 ? remaining - dayC : 0;
-                    // Update day:
-                    activityByYearsNew[yearNum].days[currentDay.day - 1] = {
-                        ...currentDay,
-                        total: dayC,
-                        yearCumulative: yc,
-                        totalCumulative: tc,
-                        remainingYearTarget,
-                        requiredPerDay,
-                        ra30,
-                        ra7,
-                        dayElevation: dayClimb,
-                        yearElevationGain,
-                        totalElevationGain
-                    };
-                });
-
-                activityByYearsNew[yearNum].total = yc;
-                activityByYearsNew[yearNum].totalElevation = yearElevationGain;
-                activityByYearsNew[yearNum].totalActivityCount = totalActivityCount;
-            });
-
-            data[type.toLowerCase()] = {
-                years: activityByYearsNew,
-                total: tc,
-                totalElevationGain
-            };
+            activityByYearsNew[yearNum].total = yc;
+            activityByYearsNew[yearNum].totalElevation = yearElevationGain;
+            activityByYearsNew[yearNum].totalActivityCount = totalActivityCount;
         });
+
+        data[type.toLowerCase()] = {
+            years: activityByYearsNew,
+            total: tc,
+            totalElevationGain
+        };
+    });
 
     return data;
 };
 
 const processData = (activities) => {
-    const activityTypes = ["Run", "Ride", "Hike", "Walk"];
-
-    const eddingtonData = processEddington(activities, activityTypes);
-    const activityData = processActivities(activities, activityTypes);
+    const eddingtonData = processEddington(activities);
+    const activityData = processActivities(activities);
     return {
         eddington: eddingtonData,
         activities: activityData

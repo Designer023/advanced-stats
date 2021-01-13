@@ -97,7 +97,7 @@ const useCulmulativeTargetDistance = () => {
     return useMemo(() => {
         return days.map((day, i) => {
             // Todo: Get target from the store!
-            return { y: (i * 3000000) / 366, x: day.date };
+            return { y: (i * 3650000) / 366, x: day.date };
         });
     }, [days]);
 };
